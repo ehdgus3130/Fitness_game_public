@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6ace10a9b938a84ea4368cd78b549b9, type: 3}
+  m_Name: "\uB9CC\uB2A5\uC2A4\uD2B8\uB7A9"
+  m_EditorClassIdentifier: Assembly-CSharp::ItemDefinitionSO
+  id: "\uB9CC\uB2A5\uC2A4\uD2B8\uB7A9"
+  displayName: "\uB9CC\uB2A5\uC2A4\uD2B8\uB7A9"
+  explain: "\uD328\uC158\uACFC \uC6B4\uB3D9\uC744 \uB3D9\uC2DC\uC5D0"
+  icon: {fileID: 0}
+  varKey: ene
+  effect: 15
+  rate: 5

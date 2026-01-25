@@ -1,0 +1,403 @@
+{
+    "Items": [
+        {
+            "name": "스트랩",
+            "var": "ene",
+            "effect": 1,
+            "rate": 0,
+            "explain": "평범한 스트랩"
+        },
+        {
+            "name": "슬리퍼",
+            "var": "ene",
+            "effect": 1,
+            "rate": 0,
+            "explain": "그래도 운동은 해야하니깐…"
+        },
+        {
+            "name": "프로틴바",
+            "var": "fat",
+            "effect": 1,
+            "rate": 0,
+            "explain": "저렴한 간편간식!"
+        },
+        {
+            "name": "프로틴",
+            "var": "fat",
+            "effect": 1,
+            "rate": 0,
+            "explain": "어디선가 싸게팔고있는 프로틴"
+        },
+        {
+            "name": "헬린이AB롤러",
+            "var": "AbsEXP",
+            "effect": 10,
+            "rate": 0,
+            "explain": "멧돌로 사용가능할거같다"
+        },
+        {
+            "name": "헬린이손목보호대",
+            "var": "ArmEXP",
+            "effect": 10,
+            "rate": 0,
+            "explain": "손목보호에 좋은 도구"
+        },
+        {
+            "name": "헬린이복대",
+            "var": "BackEXP",
+            "effect": 10,
+            "rate": 0,
+            "explain": "코어힘을 잡아주는 도구"
+        },
+        {
+            "name": "헬린이어깨보호대",
+            "var": "ChestEXP",
+            "effect": 10,
+            "rate": 0,
+            "explain": "병원에서 가져온 도구"
+        },
+        {
+            "name": "헬린이무릎보호대",
+            "var": "LegEXP",
+            "effect": 10,
+            "rate": 0,
+            "explain": "1000원짜리!"
+        },
+        {
+            "name": "헬린이팔꿈치보호대",
+            "var": "ShoulderEXP",
+            "effect": 10,
+            "rate": 0,
+            "explain": "팔꿈치보호에 좋은 도구"
+        },
+        {
+            "name": "초급 스트랩",
+            "var": "ene",
+            "effect": 3,
+            "rate": 1,
+            "explain": "그나마 힘있는 스트랩"
+        },
+        {
+            "name": "초급 운동화",
+            "var": "ene",
+            "effect": 3,
+            "rate": 1,
+            "explain": "어디선가 찾아온 운동화"
+        },
+        {
+            "name": "구워진 닭가슴살",
+            "var": "fat",
+            "effect": 3,
+            "rate": 1,
+            "explain": "그나마 맛있어보인다"
+        },
+        {
+            "name": "크레아틴",
+            "var": "fat",
+            "effect": 3,
+            "rate": 1,
+            "explain": "운동용 부스터"
+        },
+        {
+            "name": "플라스틱AB롤러",
+            "var": "AbsEXP",
+            "effect": 30,
+            "rate": 1,
+            "explain": "형태는 갖춘 도구"
+        },
+        {
+            "name": "초급손목보호대",
+            "var": "ArmEXP",
+            "effect": 30,
+            "rate": 1,
+            "explain": "초급자가 사용하기에 좋은 손목보호대"
+        },
+        {
+            "name": "초급복대",
+            "var": "BackEXP",
+            "effect": 30,
+            "rate": 1,
+            "explain": "초급자가 사용하기에 좋은 복대"
+        },
+        {
+            "name": "초급어깨보호대",
+            "var": "ChestEXP",
+            "effect": 30,
+            "rate": 1,
+            "explain": "초급자가 사용하기에 좋은 어깨보호대"
+        },
+        {
+            "name": "초급무릎보호대",
+            "var": "LegEXP",
+            "effect": 30,
+            "rate": 1,
+            "explain": "초급자가 사용하기에 좋은 무릎보호대"
+        },
+        {
+            "name": "초급팔꿈치보호대",
+            "var": "ShoulderEXP",
+            "effect": 30,
+            "rate": 1,
+            "explain": "초급자가 사용하기에 좋은 팔꿈치 보호대"
+        },
+        {
+            "name": "중급 스트랩",
+            "var": "ene",
+            "effect": 5,
+            "rate": 2,
+            "explain": "중급자용 스트랩"
+        },
+        {
+            "name": "중급 운동화",
+            "var": "ene",
+            "effect": 5,
+            "rate": 2,
+            "explain": "중급자용 운동화"
+        },
+        {
+            "name": "닭가슴살맛프로틴바",
+            "var": "fat",
+            "effect": 5,
+            "rate": 2,
+            "explain": "특이한 맛이난다"
+        },
+        {
+            "name": "BCAA",
+            "var": "fat",
+            "effect": 5,
+            "rate": 2,
+            "explain": "운동용 부스터(포도맛)"
+        },
+        {
+            "name": "중급AB롤러",
+            "var": "AbsEXP",
+            "effect": 50,
+            "rate": 2,
+            "explain": "중급자가 사용하기 좋은 복근운동 도구"
+        },
+        {
+            "name": "중급손목보호대",
+            "var": "ArmEXP",
+            "effect": 50,
+            "rate": 2,
+            "explain": "중급자가 사용하기에 좋은 손목보호대"
+        },
+        {
+            "name": "중급복대",
+            "var": "BackEXP",
+            "effect": 50,
+            "rate": 2,
+            "explain": "중급자가 사용하기에 좋은 복대"
+        },
+        {
+            "name": "중급어깨보호대",
+            "var": "ChestEXP",
+            "effect": 50,
+            "rate": 2,
+            "explain": "중급자가 사용하기에 좋은 어깨보호대"
+        },
+        {
+            "name": "중급무릎보호대",
+            "var": "LegEXP",
+            "effect": 50,
+            "rate": 2,
+            "explain": "중급자가 사용하기에 좋은 무릎보호대"
+        },
+        {
+            "name": "중급팔꿈치보호대",
+            "var": "ShoulderEXP",
+            "effect": 50,
+            "rate": 2,
+            "explain": "중급자가 사용하기에 좋은 팔꿈치 보호대"
+        },
+        {
+            "name": "고급 스트랩",
+            "var": "ene",
+            "effect": 7,
+            "rate": 3,
+            "explain": "감기는 맛이있는 스트랩"
+        },
+        {
+            "name": "고급 운동화",
+            "var": "ene",
+            "effect": 7,
+            "rate": 3,
+            "explain": "고급운동화(바닥이 평평한게 특징)"
+        },
+        {
+            "name": "훈제닭가슴살",
+            "var": "fat",
+            "effect": 7,
+            "rate": 3,
+            "explain": "고급진 맛이 난다"
+        },
+        {
+            "name": "글루타민",
+            "var": "fat",
+            "effect": 7,
+            "rate": 3,
+            "explain": "근손실 방지!"
+        },
+        {
+            "name": "고급AB롤러",
+            "var": "AbsEXP",
+            "effect": 70,
+            "rate": 3,
+            "explain": "실력자가 사용하기에 좋은 복근운동 도구"
+        },
+        {
+            "name": "고급손목보호대",
+            "var": "ArmEXP",
+            "effect": 70,
+            "rate": 3,
+            "explain": "실력자가 사용하기에 좋은 손목보호대"
+        },
+        {
+            "name": "고급복대",
+            "var": "BackEXP",
+            "effect": 70,
+            "rate": 3,
+            "explain": "실력자가 사용하기에 좋은 복대"
+        },
+        {
+            "name": "고급어깨보호대",
+            "var": "ChestEXP",
+            "effect": 70,
+            "rate": 3,
+            "explain": "실력자가 사용하기에 좋은 어깨보호대"
+        },
+        {
+            "name": "고급무릎보호대",
+            "var": "LegEXP",
+            "effect": 70,
+            "rate": 3,
+            "explain": "실력자가 사용하기 좋은 무릎보호대"
+        },
+        {
+            "name": "고급팔꿈치보호대",
+            "var": "ShoulderEXP",
+            "effect": 70,
+            "rate": 3,
+            "explain": "실력자가 사용하기에 좋은 팔꿈치보호대"
+        },
+        {
+            "name": "헬창 스트랩",
+            "var": "ene",
+            "effect": 10,
+            "rate": 4,
+            "explain": "모든것을 들수있을거같다"
+        },
+        {
+            "name": "헬창 운동화",
+            "var": "ene",
+            "effect": 10,
+            "rate": 4,
+            "explain": "신발의 끝판왕"
+        },
+        {
+            "name": "황금닭가슴살",
+            "var": "fat",
+            "effect": 10,
+            "rate": 4,
+            "explain": "닭가슴살이 이렇게 비싸도되나.."
+        },
+        {
+            "name": "부스터",
+            "var": "fat",
+            "effect": 10,
+            "rate": 4,
+            "explain": "운동을 하지않아도 강해지는 느낌"
+        },
+        {
+            "name": "헬창AB롤러",
+            "var": "AbsEXP",
+            "effect": 100,
+            "rate": 4,
+            "explain": "복근이 싫어한다"
+        },
+        {
+            "name": "헬창손목보호대",
+            "var": "ArmEXP",
+            "effect": 100,
+            "rate": 4,
+            "explain": "손목에 감기는 느낌이 다르다"
+        },
+        {
+            "name": "헬창복대",
+            "var": "BackEXP",
+            "effect": 100,
+            "rate": 4,
+            "explain": "복부가 터질정도로 조여준다"
+        },
+        {
+            "name": "헬창어깨보호대",
+            "var": "ChestEXP",
+            "effect": 100,
+            "rate": 4,
+            "explain": "헬찰의 대포알 어깨 메이커"
+        },
+        {
+            "name": "헬창무릎보호대",
+            "var": "LegEXP",
+            "effect": 100,
+            "rate": 4,
+            "explain": "헬창들이 애용한다는 무릎 보호대"
+        },
+        {
+            "name": "헬창팔꿈치보호대",
+            "var": "ShoulderEXP",
+            "effect": 100,
+            "rate": 4,
+            "explain": "헬창들이 애용한다는 팔꿈치 보호대"
+        },
+        {
+            "name": "그랑프리 우승트로피",
+            "var": "ALL_EXP",
+            "effect": 150,
+            "rate": 5,
+            "explain": "가지고있는것 만으로 동기부여"
+        },
+        {
+            "name": "만능스트랩",
+            "var": "ene",
+            "effect": 15,
+            "rate": 5,
+            "explain": "패션과 운동을 동시에"
+        },
+        {
+            "name": "만능운동화",
+            "var": "ene",
+            "effect": 15,
+            "rate": 5,
+            "explain": "패션과 운동을 동시에"
+        },
+        {
+            "name": "머리띠",
+            "var": "ene",
+            "effect": 15,
+            "rate": 5,
+            "explain": "차고있는것 만으로도 왠지 힘이나는거같다"
+        },
+        {
+            "name": "종합영양제",
+            "var": "fat",
+            "effect": 15,
+            "rate": 5,
+            "explain": "모든 영양을 한번에"
+        },
+        {
+            "name": "에너지드링크",
+            "var": "fat",
+            "effect": 15,
+            "rate": 5,
+            "explain": "지치지않는 에너지(왠지 날개가 생길거같다)"
+        },
+        {
+            "name": "스톱워치",
+            "var": "time",
+            "effect": 3,
+            "rate": 5,
+            "explain": "시간이 늘어날지도?"
+        }
+    ]
+}

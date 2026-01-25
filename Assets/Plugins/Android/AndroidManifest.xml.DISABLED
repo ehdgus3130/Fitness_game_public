@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools" package="com.Kimddu_ggu.Fitness">
+  <!-- 권한 정의 -->
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+  <application>
+    <!-- Unity 기본 액티비티 -->
+    <activity android:name="com.unity3d.player.UnityPlayerActivity" android:theme="@style/UnityThemeSelector">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+      <meta-data android:name="unityplayer.UnityActivity" android:value="true" />
+    </activity>
+    <!-- Google Mobile Ads Provider 충돌 방지 -->
+    <provider android:name="com.google.android.gms.ads.MobileAdsInitProvider" android:authorities="com.Kimddu_ggu.Fitness.mobileadsinitprovider" android:exported="false" android:initOrder="100" tools:replace="android:authorities" />
+    <provider android:name="androidx.startup.InitializationProvider" android:authorities="com.Kimddu_ggu.Fitness.androidx-startup" android:exported="false" tools:replace="android:authorities" />
+  </application>
+</manifest>
