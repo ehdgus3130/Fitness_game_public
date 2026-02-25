@@ -49,7 +49,7 @@ public class LevelUpScreen : Singleton<LevelUpScreen>
     void OnEnable()
     {
 
-        var q = QueueRoutin.Instance;
+        var q = RoutineQueueManager.Instance;
         void AddTier(GameObject[] arr, int tier, float gain)
         {
             if (arr == null) return;
@@ -71,8 +71,8 @@ public class LevelUpScreen : Singleton<LevelUpScreen>
     {
         if (_tierByTag != null && _tierByTag.Count > 0) return;
 
-        var q = QueueRoutin.Instance;
-        if (q == null) return; // 아직 QueueRoutin이 준비 안 됨 → 다음에 다시 시도
+        var q = RoutineQueueManager.Instance;
+        if (q == null) return; // 아직 RoutineQueueManager가 준비 안 됨 → 다음에 다시 시도
 
         void AddTier(GameObject[] arr, int tier, float gain)
         {
@@ -92,7 +92,7 @@ public class LevelUpScreen : Singleton<LevelUpScreen>
     private void BuildPrefabCache()
     {
         if (_prefabByName.Count > 0) return;
-        var q = QueueRoutin.Instance;
+        var q = RoutineQueueManager.Instance;
         if (q == null) return;
         void AddAll(GameObject[] arr) { if (arr == null) return; foreach (var go in arr) if (go) _prefabByName[go.name] = go; }
         AddAll(q.Lv1); AddAll(q.Lv2); AddAll(q.Lv3); AddAll(q.Lv4);
@@ -155,7 +155,7 @@ public class LevelUpScreen : Singleton<LevelUpScreen>
     }
     private IEnumerator UP(GameObject name)
     {
-        if (!Settings.Instance.IsSOUNDClicked) LevelUpSound.Play();
+        if (!Settings.Instance.IsSoundEnabled) LevelUpSound.Play();
 
         name.SetActive(true);
         var alph = name.GetComponent<CanvasGroup>();
@@ -205,7 +205,7 @@ public class LevelUpScreen : Singleton<LevelUpScreen>
                 if (root.childCount > 0) Destroy(root.GetChild(0).gameObject);
             }
         }
-        if (!Settings.Instance.IsSOUNDClicked) PlusSound.Play();
+        if (!Settings.Instance.IsSoundEnabled) PlusSound.Play();
     }
 
     public void OnDragMuscle(int num) => Slot[num] = null;
@@ -213,7 +213,7 @@ public class LevelUpScreen : Singleton<LevelUpScreen>
     {
         BuildPrefabCache();
 
-        var key = Routin.name.Replace("(Clone)", ""); // :contentReference[oaicite:8]{index=8}
+        var key = Routin.name.Replace("(Clone)", "");
 
         // 2) 프리팹 찾기: 선형탐색 대신 캐시
         if (!_prefabByName.TryGetValue(key, out var prefab)) return;
@@ -234,8 +234,8 @@ public class LevelUpScreen : Singleton<LevelUpScreen>
         // 5) 화면에 붙이기(슬롯의 ContentRoot 기준)
         var root = GetSlotRoot(idx);
         var go = Instantiate(prefab, root);
-        var img = go.GetComponent<Image>(); if (img) img.enabled = true;  // :contentReference[oaicite:10]{index=10}
-        var drag = go.GetComponent<DragAbleUI>(); if (drag) drag.enabled = true;  // :contentReference[oaicite:11]{index=11}
+        var img = go.GetComponent<Image>(); if (img) img.enabled = true; 
+        var drag = go.GetComponent<DraggableUI>(); if (drag) drag.enabled = true; 
         Slot[idx] = go;
     }
     private int FindBlank()

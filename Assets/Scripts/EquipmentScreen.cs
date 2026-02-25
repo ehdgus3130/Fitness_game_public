@@ -7,9 +7,9 @@ using System.Collections;
 
 public class EquipmentScreen : Singleton<EquipmentScreen>
 {
-    public List<Itm> ItmSlot1 = new List<Itm>();    //���� �÷��̾ ������ �ִ� �����۸� ǥ��
-    public List<Itm> ItmSlot2 = new List<Itm>();    //���� �÷��̾ ������ �ִ� �����۸� ǥ��
-    public List<Itm> ItmSlot3 = new List<Itm>();    //���� �÷��̾ ������ �ִ� �����۸� ǥ��
+    public List<ItemData> ItmSlot1 = new List<ItemData>();    //���� �÷��̾ ������ �ִ� �����۸� ǥ��
+    public List<ItemData> ItmSlot2 = new List<ItemData>();    //���� �÷��̾ ������ �ִ� �����۸� ǥ��
+    public List<ItemData> ItmSlot3 = new List<ItemData>();    //���� �÷��̾ ������ �ִ� �����۸� ǥ��
 
     public GameObject[] Item1_;
     public GameObject[] Item2_;
@@ -58,17 +58,17 @@ public class EquipmentScreen : Singleton<EquipmentScreen>
         {
             if (DataManager.Instance.Player_Info[0].Item1 != "")
             {
-                Itm cur = DataManager.Instance.Items.Find(x => x.name == DataManager.Instance.Player_Info[0].Item1);
+                ItemData cur = DataManager.Instance.Items.Find(x => x.name == DataManager.Instance.Player_Info[0].Item1);
                 Equip_Item(cur, true);
             }
             if (DataManager.Instance.Player_Info[0].Item2 != "")
             {
-                Itm cur = DataManager.Instance.Items.Find(x => x.name == DataManager.Instance.Player_Info[0].Item2);
+                ItemData cur = DataManager.Instance.Items.Find(x => x.name == DataManager.Instance.Player_Info[0].Item2);
                 Equip_Item(cur, true);
             }
             if (DataManager.Instance.Player_Info[0].Item1 != "")
             {
-                Itm cur = DataManager.Instance.Items.Find(x => x.name == DataManager.Instance.Player_Info[0].Item3);
+                ItemData cur = DataManager.Instance.Items.Find(x => x.name == DataManager.Instance.Player_Info[0].Item3);
                 Equip_Item(cur, true);
             }
         }
@@ -111,9 +111,9 @@ public class EquipmentScreen : Singleton<EquipmentScreen>
     }
 
     /// <summary>
-    /// Change Player Character Btn
+    /// Change PlayerData Character Btn
     /// </summary>
-    /// <param name="n">Player Number</param>
+    /// <param name="n">PlayerData Number</param>
     public void TabClick(int n)
     {
         for (int i = 0; i < Character.Length; i++)
@@ -143,21 +143,21 @@ public class EquipmentScreen : Singleton<EquipmentScreen>
     }
     public void OnClickReactEvent()
     {
-        if (!Settings.Instance.IsSOUNDClicked) EquipSound.Play();
-        if (!Settings.Instance.IsVIBRATIONClicked) Handheld.Vibrate();
+        if (!Settings.Instance.IsSoundEnabled) EquipSound.Play();
+        if (!Settings.Instance.IsVibrationEnabled) Handheld.Vibrate();
     }
     public void GetItem(string NewItem, bool Isin)  //������ ȹ�� �� �̹���ȭ
     {
         if (Isin)   //Get item, Begin game 
         {
 
-            Itm _Get = DataManager.Instance.Items.Find(x => x.name == NewItem);     //������ �������ִ��� Ȯ��
+            ItemData _Get = DataManager.Instance.Items.Find(x => x.name == NewItem);     //������ �������ִ��� Ȯ��
             if (DataManager.Instance.Player_Info[0].name == "1")
-                ItmSlot1.Add(new Itm(_Get.name, _Get.var, _Get.effect, _Get.rate, _Get.explain));
+                ItmSlot1.Add(new ItemData(_Get.name, _Get.var, _Get.effect, _Get.rate, _Get.explain));
             else if (DataManager.Instance.Player_Info[0].name == "2")
-                ItmSlot2.Add(new Itm(_Get.name, _Get.var, _Get.effect, _Get.rate, _Get.explain));
+                ItmSlot2.Add(new ItemData(_Get.name, _Get.var, _Get.effect, _Get.rate, _Get.explain));
             else if (DataManager.Instance.Player_Info[0].name == "3")
-                ItmSlot3.Add(new Itm(_Get.name, _Get.var, _Get.effect, _Get.rate, _Get.explain));
+                ItmSlot3.Add(new ItemData(_Get.name, _Get.var, _Get.effect, _Get.rate, _Get.explain));
 
             GameObject getone = Instantiate(PrefabItem, ItmPos);
             getone.transform.GetChild(0).GetComponent<Image>().sprite = Array.Find(muscleItem, x => x.name == NewItem);
@@ -166,7 +166,7 @@ public class EquipmentScreen : Singleton<EquipmentScreen>
             getone.GetComponent<Button>().onClick.AddListener(() =>
             {
                 Itm_Explain.SetActive(true);
-                Itm_Explain.GetComponent<Item_Explain>().SetName(getone.name);
+                Itm_Explain.GetComponent<ItemExplain>().SetName(getone.name);
             });
 
             Data_Item_Save(getone.name, true, 4);   // to json
@@ -222,7 +222,7 @@ public class EquipmentScreen : Singleton<EquipmentScreen>
                     button.onClick.AddListener(() =>
                     {
                         Itm_Explain.SetActive(true);
-                        Itm_Explain.GetComponent<Item_Explain>().SetName(button.name);
+                        Itm_Explain.GetComponent<ItemExplain>().SetName(button.name);
                     });
                 }
 
@@ -231,7 +231,7 @@ public class EquipmentScreen : Singleton<EquipmentScreen>
         }
     }
 
-    public void Equip_Item(Itm _name, bool JustDo)
+    public void Equip_Item(ItemData _name, bool JustDo)
     {
         if (JustDo)
         {
@@ -314,7 +314,7 @@ public class EquipmentScreen : Singleton<EquipmentScreen>
                     if (where == "ene" || where == "fat" || where == "time")
                     {
                         EXPS_[ex.ToString()] += how;
-                        LevelControl.Instance.ItemSkill(true);  //ene,fat,time�� ���
+                        PlayerLevelController.Instance.ItemSkill(true);  //ene,fat,time�� ���
                     }
                     else
                         EXPS_[ex.ToString()] += how;
@@ -332,7 +332,7 @@ public class EquipmentScreen : Singleton<EquipmentScreen>
                     if (where == "ene" || where == "fat" || where == "time")
                     {
                         EXPS_[ex.ToString()] -= how;
-                        LevelControl.Instance.ItemSkill(false);  //ene,fat,time�� ���
+                        PlayerLevelController.Instance.ItemSkill(false);  //ene,fat,time�� ���
                     }
                     else
                         EXPS_[ex.ToString()] -= how;
@@ -360,47 +360,47 @@ public class EquipmentScreen : Singleton<EquipmentScreen>
                     }
                     else if (4 <= EXPS_[ex.ToString()] && EXPS_[ex.ToString()] < 7)
                     {
-                        bar.GetChild(3).GetComponent<Image>().sprite = Bar_[1];//Item_Explain.Instance.Bar[3];
-                        bar.GetChild(2).GetComponent<Image>().sprite = Bar_[2];//Item_Explain.Instance.Bar[4];
+                        bar.GetChild(3).GetComponent<Image>().sprite = Bar_[1];//ItemExplain.Instance.Bar[3];
+                        bar.GetChild(2).GetComponent<Image>().sprite = Bar_[2];//ItemExplain.Instance.Bar[4];
                     }
                     else if (7 <= EXPS_[ex.ToString()] && EXPS_[ex.ToString()] < 10)
                     {
 
-                        bar.GetChild(3).GetComponent<Image>().sprite = Bar_[3];//Item_Explain.Instance.Bar[6];
-                        bar.GetChild(2).GetComponent<Image>().sprite = Bar_[4];//Item_Explain.Instance.Bar[7];
-                        bar.GetChild(1).GetComponent<Image>().sprite = Bar_[4];//Item_Explain.Instance.Bar[7];
+                        bar.GetChild(3).GetComponent<Image>().sprite = Bar_[3];//ItemExplain.Instance.Bar[6];
+                        bar.GetChild(2).GetComponent<Image>().sprite = Bar_[4];//ItemExplain.Instance.Bar[7];
+                        bar.GetChild(1).GetComponent<Image>().sprite = Bar_[4];//ItemExplain.Instance.Bar[7];
                     }
                     else if (10 <= EXPS_[ex.ToString()])
                     {
-                        bar.GetChild(3).GetComponent<Image>().sprite = Bar_[5];//Item_Explain.Instance.Bar[9];
-                        bar.GetChild(2).GetComponent<Image>().sprite = Bar_[6]; //Item_Explain.Instance.Bar[10];
-                        bar.GetChild(1).GetComponent<Image>().sprite = Bar_[6]; //Item_Explain.Instance.Bar[10];
-                        bar.GetChild(0).GetComponent<Image>().sprite = Bar_[7]; //Item_Explain.Instance.Bar[11];
+                        bar.GetChild(3).GetComponent<Image>().sprite = Bar_[5];//ItemExplain.Instance.Bar[9];
+                        bar.GetChild(2).GetComponent<Image>().sprite = Bar_[6]; //ItemExplain.Instance.Bar[10];
+                        bar.GetChild(1).GetComponent<Image>().sprite = Bar_[6]; //ItemExplain.Instance.Bar[10];
+                        bar.GetChild(0).GetComponent<Image>().sprite = Bar_[7]; //ItemExplain.Instance.Bar[11];
                     }
                 }
                 else
                 {
                     if (1 <= EXPS_[ex.ToString()] && EXPS_[ex.ToString()] < 30)
                     {
-                        bar.GetChild(3).GetComponent<Image>().sprite = Bar_[0];//Item_Explain.Instance.Bar[0];
+                        bar.GetChild(3).GetComponent<Image>().sprite = Bar_[0];//ItemExplain.Instance.Bar[0];
                     }
                     else if (30 <= EXPS_[ex.ToString()] && EXPS_[ex.ToString()] < 50)
                     {
-                        bar.GetChild(3).GetComponent<Image>().sprite = Bar_[1];//Item_Explain.Instance.Bar[3];
-                        bar.GetChild(2).GetComponent<Image>().sprite = Bar_[2];//Item_Explain.Instance.Bar[4];
+                        bar.GetChild(3).GetComponent<Image>().sprite = Bar_[1];//ItemExplain.Instance.Bar[3];
+                        bar.GetChild(2).GetComponent<Image>().sprite = Bar_[2];//ItemExplain.Instance.Bar[4];
                     }
                     else if (50 <= EXPS_[ex.ToString()] && EXPS_[ex.ToString()] < 70)
                     {
-                        bar.GetChild(3).GetComponent<Image>().sprite = Bar_[3];//Item_Explain.Instance.Bar[6];
-                        bar.GetChild(2).GetComponent<Image>().sprite = Bar_[4];//Item_Explain.Instance.Bar[7];
-                        bar.GetChild(1).GetComponent<Image>().sprite = Bar_[4];//Item_Explain.Instance.Bar[7];
+                        bar.GetChild(3).GetComponent<Image>().sprite = Bar_[3];//ItemExplain.Instance.Bar[6];
+                        bar.GetChild(2).GetComponent<Image>().sprite = Bar_[4];//ItemExplain.Instance.Bar[7];
+                        bar.GetChild(1).GetComponent<Image>().sprite = Bar_[4];//ItemExplain.Instance.Bar[7];
                     }
                     else if (70 <= EXPS_[ex.ToString()])
                     {
-                        bar.GetChild(3).GetComponent<Image>().sprite = Bar_[5];//Item_Explain.Instance.Bar[9];
-                        bar.GetChild(2).GetComponent<Image>().sprite = Bar_[6];//Item_Explain.Instance.Bar[10];
-                        bar.GetChild(1).GetComponent<Image>().sprite = Bar_[6];//Item_Explain.Instance.Bar[10];
-                        bar.GetChild(0).GetComponent<Image>().sprite = Bar_[7];//Item_Explain.Instance.Bar[11];
+                        bar.GetChild(3).GetComponent<Image>().sprite = Bar_[5];//ItemExplain.Instance.Bar[9];
+                        bar.GetChild(2).GetComponent<Image>().sprite = Bar_[6];//ItemExplain.Instance.Bar[10];
+                        bar.GetChild(1).GetComponent<Image>().sprite = Bar_[6];//ItemExplain.Instance.Bar[10];
+                        bar.GetChild(0).GetComponent<Image>().sprite = Bar_[7];//ItemExplain.Instance.Bar[11];
                     }
                 }
             }
@@ -412,7 +412,7 @@ public class EquipmentScreen : Singleton<EquipmentScreen>
     /// <param name="Parent"> Item slot 1 or 2 or 3 </param>
     public void OnDeleteClick(GameObject[] Parent)
     {
-        Itm cur = DataManager.Instance.Items.Find(x => x.name == Parent[1].GetComponent<TMP_Text>().text);
+        ItemData cur = DataManager.Instance.Items.Find(x => x.name == Parent[1].GetComponent<TMP_Text>().text);
         if (cur != null) AddEXP(cur.var, cur.effect, false);
 
         if (Parent == Item1_) { Data_Item_Save(Parent[1].name, false, 1); }

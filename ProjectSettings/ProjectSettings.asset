@@ -267,8 +267,8 @@ PlayerSettings:
   AndroidTargetArchitectures: 2
   AndroidSplashScreenScale: 0
   androidSplashScreen: {fileID: 0}
-  AndroidKeystoreName: ''
-  AndroidKeyaliasName: ''
+  AndroidKeystoreName: '0'
+  AndroidKeyaliasName: 0
   AndroidEnableArmv9SecurityFeatures: 0
   AndroidEnableArm64MTE: 0
   AndroidBuildApkPerCpuArchitecture: 0
@@ -280,7 +280,7 @@ PlayerSettings:
   AndroidEnableTango: 0
   androidEnableBanner: 1
   androidUseLowAccuracyLocation: 0
-  androidUseCustomKeystore: 0
+  androidUseCustomKeystore: 1
   m_AndroidBanners:
   - width: 320
     height: 180
@@ -621,7 +621,7 @@ PlayerSettings:
   ps4GarlicHeapSize: 2048
   ps4ProGarlicHeapSize: 2560
   playerPrefsMaxSize: 32768
-  ps4Passcode: ''
+  ps4Passcode: D25bFOIlcWmANChRvUT1ao3Ud48vHsjc
   ps4pnSessions: 1
   ps4pnPresence: 1
   ps4pnFriends: 1
@@ -803,11 +803,11 @@ PlayerSettings:
   captureStartupLogs: {}
   activeInputHandler: 1
   windowsGamepadBackendHint: 0
-  cloudProjectId: 909d0106-91f0-4c75-a792-9209b53297a9
+  cloudProjectId: 0
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
   projectName: Fitness_game 2025-01-09_19-14-34
-  organizationId: kimdong3139
+  organizationId: 0
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}

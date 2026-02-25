@@ -1,7 +1,7 @@
 using UnityEngine;
 /// <summary>
 /// 아이템 정의 ScriptableObject
-/// 아이템의 속성들을 보유하며, Itm 구조체로 변환하는 기능을 제공
+/// 아이템의 속성들을 보유하며, ItemData 구조체로 변환하는 기능을 제공
 /// </summary>
 
 [CreateAssetMenu(menuName = "Game Data/Item Definition", fileName = "ItemDefinition")]
@@ -30,12 +30,12 @@ public class ItemDefinitionSO : ScriptableObject
     [Tooltip("레어도/등급")]
     public int rate;
 
-    public Itm ToItm() // Item 구조체 변환
+    public ItemData ToItemData() // ItemData 변환
     {
         var n = string.IsNullOrEmpty(displayName) ? name : displayName;
         var v = varKey ?? "";
         var ex = explain ?? "";
-        return new Itm(n, v, effect, rate, ex);
+        return new ItemData(n, v, effect, rate, ex);
     }
 
 #if UNITY_EDITOR // Editor 전용 코드

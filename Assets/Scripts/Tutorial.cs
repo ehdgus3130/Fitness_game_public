@@ -18,7 +18,7 @@ public class Tutorial : MonoBehaviour
 
     public void Awake()
     {
-        Transform canvas = LevelControl.Instance.transform.parent;
+        Transform canvas = PlayerLevelController.Instance.transform.parent;
         this.transform.SetParent(canvas.transform, false);
         scroll.value = 0;
     }

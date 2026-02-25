@@ -3859,7 +3859,7 @@ GameObject:
   - component: {fileID: 4095490245548130908}
   - component: {fileID: 1689811558152220651}
   m_Layer: 5
-  m_Name: Item_Explain
+  m_Name: ItemExplain
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4571,7 +4571,7 @@ GameObject:
   - component: {fileID: 7700137209462913666}
   - component: {fileID: 8732347170702047868}
   m_Layer: 5
-  m_Name: Item_Explain
+  m_Name: ItemExplain
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
