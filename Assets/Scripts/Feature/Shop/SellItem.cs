@@ -15,7 +15,7 @@ public class SellItem : Singleton<SellItem>
     public GameObject ItemPrice;
     public Image ITEMPRICE;
     public TMP_Text priceText;
-    private List<ItemData> allItems;
+    private IReadOnlyList<ItemData> allItems;
     private Dictionary<int, List<ItemData>> itemsByRate;
     private Image selfBg;
     void Awake()
@@ -25,10 +25,10 @@ public class SellItem : Singleton<SellItem>
         yellow = RoutineQueueManager.Instance.Lv3;
         red = RoutineQueueManager.Instance.Lv4;
 
-        //GameItems = DataManager.Instance.Items;
+        //GameItems = DataManager.Instance.GetItems();
         selfBg = GetComponent<Image>();
 
-        allItems = DataManager.Instance.Items ?? new List<ItemData>();
+        allItems = DataManager.Instance.GetItems() ?? new List<ItemData>();
         itemsByRate = allItems
             .GroupBy(i => i.rate)
             .ToDictionary(g => g.Key, g => g.ToList());
@@ -75,14 +75,14 @@ public class SellItem : Singleton<SellItem>
             {
                 // 완전 폴백(전체에서 아무거나)
                 if (allItems.Count == 0) return gameObject;
-                candidates = allItems;
+                candidates = allItems.ToList();
             }
         }
         // 3) 최종 아이템 선택
         var get_ = candidates[UnityEngine.Random.Range(0, candidates.Count)];
 
         // 4) 코어 아이콘 매핑(널 대비)
-        var core = Array.Find(DataManager.Instance.muscleItem, x => x.name == get_.name);
+        var core = Array.Find(DataManager.Instance.MuscleItems, x => x.name == get_.name);
         if (coreimg != null) coreimg.sprite = core != null ? core : coreimg.sprite;
         Debug.Log(coreimg.name);
         // 5) 희귀도별 UI 세팅(배경, 가격 아이콘, 수량)

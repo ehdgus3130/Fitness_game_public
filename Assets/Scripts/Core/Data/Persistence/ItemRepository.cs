@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using UnityEngine;
 
-public sealed class ItemRepository
+public sealed class ItemRepository : IItemStore
 {
     [Serializable]
     private class ItemListWrap
@@ -17,14 +17,6 @@ public sealed class ItemRepository
         public List<ItemData> Items;
     }
 
-    public enum LoadStatus
-    {
-        MissingFile,
-        Empty,
-        Loaded,
-        ParseError
-    }
-
     private readonly JsonFileStore _store;
 
     public ItemRepository(JsonFileStore store)
@@ -32,13 +24,13 @@ public sealed class ItemRepository
         _store = store;
     }
 
-    public LoadStatus LoadList(string fileName, List<ItemData> target, bool clearTarget = false)
+    public ItemListLoadStatus LoadList(string fileName, List<ItemData> target, bool clearTarget = false)
     {
         if (clearTarget) target.Clear();
-        if (!_store.Exists(fileName)) return LoadStatus.MissingFile;
+        if (!_store.Exists(fileName)) return ItemListLoadStatus.MissingFile;
 
         var json = _store.Read(fileName);
-        if (string.IsNullOrWhiteSpace(json)) return LoadStatus.Empty;
+        if (string.IsNullOrWhiteSpace(json)) return ItemListLoadStatus.Empty;
 
         try
         {
@@ -46,21 +38,21 @@ public sealed class ItemRepository
             if (s.StartsWith("["))
             {
                 var arr = JsonConvert.DeserializeObject<List<ItemData>>(json) ?? new List<ItemData>();
-                if (arr.Count == 0) return LoadStatus.Empty;
+                if (arr.Count == 0) return ItemListLoadStatus.Empty;
                 target.AddRange(arr);
-                return LoadStatus.Loaded;
+                return ItemListLoadStatus.Loaded;
             }
 
             var w = JsonUtility.FromJson<ItemListWrap>(json);
             var list = w?.Items ?? new List<ItemData>();
-            if (list.Count == 0) return LoadStatus.Empty;
+            if (list.Count == 0) return ItemListLoadStatus.Empty;
             target.AddRange(list);
-            return LoadStatus.Loaded;
+            return ItemListLoadStatus.Loaded;
         }
         catch (Exception e)
         {
             Debug.LogError($"LoadItemList parse error: {fileName}\n{e}\njson: {json}");
-            return LoadStatus.ParseError;
+            return ItemListLoadStatus.ParseError;
         }
     }
 

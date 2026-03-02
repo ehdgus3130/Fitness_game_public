@@ -128,7 +128,7 @@ public class LevelUpScreen : Singleton<LevelUpScreen>
             if (pairs[i].score >= 100f) full++;
             pairs[i].go.transform.SetSiblingIndex(i);
         }
-        if (full == 6) GameManager.Instance.UnlockCharacter(DataManager.Instance.CurPlayer);
+        if (full == 6) GameManager.Instance.UnlockCharacter(DataManager.Instance.GetCurrentPlayerId());
     }
 
 

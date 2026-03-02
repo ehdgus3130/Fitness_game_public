@@ -79,8 +79,7 @@ public class PlayerLevelController : Singleton<PlayerLevelController>
     {
         yield return new WaitUntil(() =>
         DataManager.Instance && DataManager.Instance.IsInitialized &&
-        DataManager.Instance.Player_Info != null &&
-        DataManager.Instance.Player_Info.Count > 0);
+        DataManager.Instance.TryGetCurrentPlayer(out _));
 
         TimeDay = false;
         Timer = 20;
@@ -93,7 +92,7 @@ public class PlayerLevelController : Singleton<PlayerLevelController>
         Timer_Img.fillAmount = 0;
         Timer_Img.fillOrigin = (int)Image.OriginHorizontal.Left;
 
-        SetStartFeature(DataManager.Instance.Player_Info, 0);
+        SetStartFeature(DataManager.Instance.GetCurrentPlayer());
 
         SetTimeDay(false);
         NightMap.color = new Color32(40, 40, 40, 150);
@@ -243,11 +242,7 @@ public class PlayerLevelController : Singleton<PlayerLevelController>
     }
     public void Data_Day_Save() //수정 필요
     {
-        //DataManager.Instance.Player_Info[Idx].DAYLV = Lv.ToString();
-        var dm = DataManager.Instance;
-        dm.Player_Info[0].DAYLV = Lv.ToString();           // 현재 플레이어
-        int idx = int.Parse(dm.CurPlayer) - 1;
-        dm.AllPlayer_Info[idx].DAYLV = dm.Player_Info[0].DAYLV; // 전체 목록에도 반영
+        DataManager.Instance.SetCurrentPlayerDayLevel(Lv);
     }
 
     /// <summary>
@@ -256,11 +251,12 @@ public class PlayerLevelController : Singleton<PlayerLevelController>
     /// </summary>
     /// <param name="player"> player list data </param>
     /// <param name="num"> choosen player number </param>
-    private void SetStartFeature(List<PlayerData> player, int num)
+    private void SetStartFeature(PlayerData player)
     {
-        this.Energy = float.Parse(player[num].Energy);
-        this.Fatigue = float.Parse(player[num].Fatigue);
-        this.Lv = int.Parse(player[num].DAYLV);
+        if (player == null) return;
+        this.Energy = float.Parse(player.Energy);
+        this.Fatigue = float.Parse(player.Fatigue);
+        this.Lv = int.Parse(player.DAYLV);
     }
 }
 

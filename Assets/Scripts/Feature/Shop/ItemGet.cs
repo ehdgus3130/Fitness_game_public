@@ -45,7 +45,7 @@ public class ItemGet : Singleton<ItemGet>
             if (s != null && !_spriteByName.ContainsKey(s.name)) _spriteByName.Add(s.name, s);
 
         _itemByName = new Dictionary<string, ItemData>(StringComparer.Ordinal);
-        foreach (var it in DataManager.Instance.Items)
+        foreach (var it in DataManager.Instance.GetItems())
             if (it != null && !_itemByName.ContainsKey(it.name)) _itemByName.Add(it.name, it);
 
     }

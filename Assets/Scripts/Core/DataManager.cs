@@ -13,14 +13,18 @@ public class DataManager : Singleton<DataManager>    //Information
 #endif
 
 
-    public TextAsset FormatUser_DataBase; //All User data
-    public List<PlayerData> AllPlayer_Info, Player_Info;   //make into List 
-    public List<ItemData> Items = new List<ItemData>();
-    public ItemDatabaseSO itemDatabase;
-    private readonly Dictionary<string, ItemData> _itemByName = new Dictionary<string, ItemData>();
+    [SerializeField] private TextAsset FormatUser_DataBase; //All User data
+    private readonly List<PlayerData> _allPlayerInfo = new List<PlayerData>();
+    private readonly List<PlayerData> _playerInfo = new List<PlayerData>();
+    private readonly List<ItemData> _items = new List<ItemData>();
+    [SerializeField] private ItemDatabaseSO itemDatabase;
+    private ItemDataService _itemDataService;
+    private PlayerDataService _playerDataService;
     private JsonFileStore _fileStore;
-    private ItemRepository _itemRepository;
-    private PlayerRepository _playerRepository;
+    private IItemStore _itemRepository;
+    private IPlayerStore _playerRepository;
+    private IDataResourceProvider _resourceProvider;
+    private bool _playerDataHooksBound;
 
     private const string PlayerInfoFileName = "Player_Info.json";
     private const string AllPlayerInfoFileName = "AllPlayer_Info.json";
@@ -28,41 +32,9 @@ public class DataManager : Singleton<DataManager>    //Information
     private const string CurItemInfo2FileName = "CurItem_Info2.json";
     private const string CurItemInfo3FileName = "CurItem_Info3.json";
 
-    public Sprite[] muscleItem;
-    public string CurPlayer;        //CUrrent PlayerData
+    [SerializeField] private Sprite[] muscleItem;
+    public string CurPlayer { get; private set; }        //CUrrent PlayerData
     private string _PersistentDataPath;
-
-    /// <summary>
-    /// Dictionary 생성
-    /// </summary>
-    private void BuildItemIndex()
-    {
-        _itemByName.Clear();
-        for (int i = 0; i < Items.Count; i++)
-        {
-            var it = Items[i];
-            if (it == null) continue;
-            if (string.IsNullOrEmpty(it.name)) continue;
-            _itemByName[it.name] = it;
-        }
-    }
-
-    private bool TryGetItemByName(string itemName, out ItemData item)
-    {
-        item = null;
-        if (string.IsNullOrEmpty(itemName)) return false;
-
-        if (_itemByName.TryGetValue(itemName, out item) && item != null) return true;
-
-        // fallback (index 누락 방지)
-        item = Items.Find(x => x != null && x.name == itemName);
-        if (item != null)
-        {
-            _itemByName[itemName] = item;
-            return true;
-        }
-        return false;
-    }
 
     private void EnsureRepositories()
     {
@@ -85,10 +57,114 @@ public class DataManager : Singleton<DataManager>    //Information
         {
             _playerRepository = new PlayerRepository(_fileStore);
         }
+
+        if (_itemDataService == null)
+        {
+            _itemDataService = new ItemDataService();
+        }
+
+        if (_playerDataService == null)
+        {
+            _playerDataService = new PlayerDataService();
+        }
+
+        if (_resourceProvider == null)
+        {
+            _resourceProvider = new UnityDataResourceProvider();
+        }
+
+        if (!_playerDataHooksBound)
+        {
+            PlayerData.MuscleLevelUpHandler = PlayerDataRuntimeBridge.NotifyMuscleLevelUp;
+            PlayerData.GiftBoxCountUpHandler = PlayerDataRuntimeBridge.NotifyGiftBoxCountUp;
+            PlayerData.ScoreChangedHandler = PlayerDataRuntimeBridge.NotifyScoreChanged;
+            PlayerData.MuscleRecalculateHandler = PlayerDataRuntimeBridge.RecalculateMuscleLevel;
+            _playerDataHooksBound = true;
+        }
     }
 
     public bool IsInitialized { get; private set; }
     public bool ItemsLoaded { get; private set; }
+    public TextAsset FormatUserDatabase => FormatUser_DataBase;
+    public ItemDatabaseSO ItemDatabase => itemDatabase;
+    public Sprite[] MuscleItems => muscleItem;
+    public IReadOnlyList<PlayerData> AllPlayerInfo => _allPlayerInfo;
+    public IReadOnlyList<PlayerData> CurrentPlayerInfo => _playerInfo;
+    public IReadOnlyList<ItemData> ItemCatalog => _items;
+
+    public PlayerData GetCurrentPlayer()
+    {
+        if (_playerInfo.Count == 0) return null;
+        return _playerInfo[0];
+    }
+
+    public bool TryGetCurrentPlayer(out PlayerData player)
+    {
+        player = GetCurrentPlayer();
+        return player != null;
+    }
+
+    public string GetCurrentPlayerId() => CurPlayer;
+
+    public IReadOnlyList<ItemData> GetItems() => _items;
+
+    public bool TryGetCurrentPlayerDayLevel(out int dayLevel)
+    {
+        dayLevel = 1;
+        var current = GetCurrentPlayer();
+        if (current == null) return false;
+        return int.TryParse(current.DAYLV, out dayLevel);
+    }
+
+    public ItemData FindItemByName(string itemName)
+    {
+        EnsureRepositories();
+        return _itemDataService.TryGetByName(_items, itemName, out var item) ? item : null;
+    }
+
+    public bool TryFindItemByName(string itemName, out ItemData item)
+    {
+        EnsureRepositories();
+        return _itemDataService.TryGetByName(_items, itemName, out item);
+    }
+
+    public bool IsCurrentPlayerItemEquipped(string itemName)
+    {
+        var p = GetCurrentPlayer();
+        if (p == null || string.IsNullOrEmpty(itemName)) return false;
+        return p.Item1 == itemName || p.Item2 == itemName || p.Item3 == itemName;
+    }
+
+    public void SetCurrentPlayerItem(int slot, string itemName)
+    {
+        var p = GetCurrentPlayer();
+        if (p == null) return;
+
+        switch (slot)
+        {
+            case 1: p.Item1 = itemName ?? ""; break;
+            case 2: p.Item2 = itemName ?? ""; break;
+            case 3: p.Item3 = itemName ?? ""; break;
+        }
+    }
+
+    public void ClearCurrentPlayerItem(int slot) => SetCurrentPlayerItem(slot, "");
+
+    public void SetCurrentPlayerDayLevel(int dayLevel)
+    {
+        var current = GetCurrentPlayer();
+        if (current == null) return;
+
+        var dayLevelText = dayLevel.ToString();
+        current.DAYLV = dayLevelText;
+
+        if (!int.TryParse(CurPlayer, out var parsedId)) return;
+        var index = parsedId - 1;
+        if (index < 0 || index >= _allPlayerInfo.Count) return;
+        if (_allPlayerInfo[index] == null) return;
+
+        _allPlayerInfo[index].DAYLV = dayLevelText;
+    }
     void Start() //private IEnumerator
     {   //전체 플레이어 리스트 불러오기
         _PersistentDataPath = Application.persistentDataPath; //edit path
@@ -99,199 +175,168 @@ public class DataManager : Singleton<DataManager>    //Information
         FormatAllPlayerData();
 #endif
 
-        Player_Info = new List<PlayerData>();
-        AllPlayer_Info = new List<PlayerData>();
+        InitializeStateContainers();
+        LogInitializationResult(InitializeItems());
+        LogInitializationResult(InitializeAllPlayers());
+        LogInitializationResult(InitializeCurrentPlayer());
+        InitializeEquipment();
+        FinalizeInitialization();
+    }
 
+    private static void LogInitializationResult(InitStepResult result)
+    {
+        if (string.IsNullOrEmpty(result.WarningMessage)) return;
+        Debug.LogWarning(result.WarningMessage);
+    }
 
-        Debug.Log("아이템 만들기 전");
+    private void InitializeStateContainers()
+    {
+        _playerInfo.Clear();
+        _allPlayerInfo.Clear();
+    }
 
-        Items.Clear();
-        // check ItemDatabaseSO first
-        if (itemDatabase == null) itemDatabase = Resources.Load<ItemDatabaseSO>("DB/ItemDatabase");
+    private InitStepResult InitializeItems()
+    {
+        var warnings = new List<string>();
+        _items.Clear();
 
-        // Load items from ItemDatabaseSO if available
+        if (itemDatabase == null) itemDatabase = _resourceProvider.Load<ItemDatabaseSO>("DB/ItemDatabase");
+
         if (itemDatabase != null && itemDatabase.items != null && itemDatabase.items.Count > 0)
         {
             for (int i = 0; i < itemDatabase.items.Count; i++)
             {
                 var def = itemDatabase.items[i];
                 if (def == null) continue;
-                Items.Add(def.ToItemData());
+                _items.Add(def.ToItemData());
             }
         }
-        else // Fallback to JSON file
+        else
         {
-            var itemTa = Resources.Load<TextAsset>("Json/Item_Info");
+            var itemTa = _resourceProvider.Load<TextAsset>("Json/Item_Info");
             if (itemTa != null)
             {
                 var parsedItems = _itemRepository.ParseFromResourceJson(itemTa.text);
                 if (parsedItems != null)
+                {
                     foreach (var it in parsedItems)
-                        Items.Add(new ItemData(it.name, it.var, it.effect, it.rate, it.explain));
+                    {
+                        _items.Add(new ItemData(it.name, it.var, it.effect, it.rate, it.explain));
+                    }
+                }
             }
             else
             {
-                Debug.LogWarning("Item_Info.json not found in Resources/Json and ItemDatabaseSO not assigned.");
+                warnings.Add("Item initialization fallback failed: Item_Info.json not found in Resources/Json and ItemDatabaseSO not assigned.");
             }
         }
 
-        BuildItemIndex(); // create dictionary for item lookup
-
-        // Load muscle item sprites
-        muscleItem = Resources.LoadAll<Sprite>("Images/Items");
+        _itemDataService.RebuildIndex(_items);
+        muscleItem = _resourceProvider.LoadAll<Sprite>("Images/Items");
         ItemsLoaded = true;
-        Debug.Log("아이템 만들기 후");
 
+        if (_items.Count == 0)
+        {
+            warnings.Add("Item initialization completed with empty item list.");
+        }
 
+        return InitStepResult.FromWarnings(warnings);
+    }
 
-        //Call All_player Info
-        var allTa = Resources.Load<TextAsset>("Json/AllPlayer_Info");
-        if (_fileStore.Exists(AllPlayerInfoFileName)) //check file exist
+    private InitStepResult InitializeAllPlayers()
+    {
+        var warnings = new List<string>();
+        var allTa = _resourceProvider.Load<TextAsset>("Json/AllPlayer_Info");
+        if (_fileStore.Exists(AllPlayerInfoFileName))
         {
             LoadAllPlayerDataFromJson();
         }
-        else if (allTa != null) //check Resources
+        else if (allTa != null)
         {
             _fileStore.Write(AllPlayerInfoFileName, allTa.text);
             LoadAllPlayerDataFromJson();
         }
-        else //finally, create default
+        else
         {
-            //default data
-            AllPlayer_Info = new List<PlayerData> {
-        new PlayerData("1","100","0","1","","","",0,0,0,0,0,0),
-        new PlayerData("2","100","0","1","","","",0,0,0,0,0,0),
-        new PlayerData("3","100","0","1","","","",0,0,0,0,0,0),
-    };
-            SavePlayerDataToAllPlayerJson();
+            warnings.Add("All player data source missing. Creating default players.");
+            ReplaceAllPlayerInfo(_playerDataService.CreateDefaultPlayers());
+            SaveAllPlayers();
         }
 
+        if (_allPlayerInfo.Count == 0)
+        {
+            warnings.Add("All player data was empty after load. Rebuilding with defaults.");
+            ReplaceAllPlayerInfo(_playerDataService.CreateDefaultPlayers());
+            SaveAllPlayers();
+        }
 
-        //Call Main_Player Info
-        if (_fileStore.Exists(PlayerInfoFileName)) //check file exist
+        return InitStepResult.FromWarnings(warnings);
+    }
+
+    private InitStepResult InitializeCurrentPlayer()
+    {
+        var warnings = new List<string>();
+        if (_fileStore.Exists(PlayerInfoFileName))
         {
             LoadPlayerDataFromJson();
         }
-        else //If not, create new file from AllPlayer
+        else
         {
-            //Set Current PlayerData to Player_Info
-            if (string.IsNullOrEmpty(CurPlayer)) CurPlayer = "1";
-            var target = AllPlayer_Info.Find(p => p.name == CurPlayer) ?? AllPlayer_Info[0];
-            Player_Info = new List<PlayerData> { target };
-            SavePlayerDataToJson();
+            warnings.Add("Player_Info.json missing. Creating current player from AllPlayer data.");
+            CreateAndPersistCurrentPlayer();
         }
 
-
-        //Check itemEquipment
-        var s1 = _itemRepository.LoadList(CurItemInfo1FileName, EquipmentScreen.Instance.ItmSlot1, clearTarget: true);
-        if (s1 == ItemRepository.LoadStatus.Empty || EquipmentScreen.Instance.ItmSlot1.Count == 0)
+        if (_playerInfo.Count == 0 || _playerInfo[0] == null)
         {
-            EquipmentScreen.Instance.GetItem("스트랩", true);
+            warnings.Add("Loaded current player data invalid. Rebuilding from AllPlayer data.");
+            CreateAndPersistCurrentPlayer();
         }
 
-        _itemRepository.LoadList(CurItemInfo2FileName, EquipmentScreen.Instance.ItmSlot2, clearTarget: true);
-        _itemRepository.LoadList(CurItemInfo3FileName, EquipmentScreen.Instance.ItmSlot3, clearTarget: true);
+        return InitStepResult.FromWarnings(warnings);
+    }
 
-        //Initialize DataManager
+    private void CreateAndPersistCurrentPlayer()
+    {
+        var target = _playerDataService.EnsureCurrentPlayer(_allPlayerInfo, CurPlayer, out var resolvedCurPlayer);
+        CurPlayer = resolvedCurPlayer;
+        SetCurrentPlayer(target);
+        SaveCurrentPlayer();
+    }
+
+    private void InitializeEquipment()
+    {
+        PlayerRuntimeDataSync.LoadEquippedItems(
+            _itemRepository,
+            CurItemInfo1FileName,
+            CurItemInfo2FileName,
+            CurItemInfo3FileName);
+    }
+
+    private void FinalizeInitialization()
+    {
         IsInitialized = true;
         Debug.Log("After Datamanager");
     }
     public void ChangePlayer(int newIdx)
     {
-        int oldIdx = int.Parse(CurPlayer) - 1;
-        if (Player_Info != null && Player_Info.Count > 0) AllPlayer_Info[oldIdx] = Player_Info[0];
-
-        var next = AllPlayer_Info[newIdx - 1];
-        if (Player_Info == null) Player_Info = new List<PlayerData>(1);
-        if (Player_Info.Count == 0) Player_Info.Add(next);
-        else Player_Info[0] = next;
-        // Player_Info.Clear();
-        // Player_Info.Add(AllPlayer_Info[newIdx - 1]);
-        CurPlayer = newIdx.ToString();
-
-        SavePlayerDataToAllPlayerJson();
-        SavePlayerDataToJson();
-
-        PlayerController[] pla = FindObjectsOfType<PlayerController>();
-        foreach (PlayerController p1 in pla)
+        if (!_playerDataService.TrySwitchPlayer(_allPlayerInfo, _playerInfo, CurPlayer, newIdx, out var nextPlayerId, out var next))
         {
-            Destroy(p1.gameObject);
+            return;
         }
 
+        SetCurrentPlayer(next);
+        CurPlayer = nextPlayerId;
 
+        SaveAllPlayers();
+        SaveCurrentPlayer();
 
-        Instantiate(RoutineQueueManager.Instance.P2, RoutineQueueManager.Instance.Screen);
-        Instantiate(RoutineQueueManager.Instance.P3, RoutineQueueManager.Instance.Screen);
-        Instantiate(RoutineQueueManager.Instance.P1, RoutineQueueManager.Instance.Screen);
-
-        //Check itemEquipment
-        if (!TryGetItemByName(Player_Info[0].Item1, out var it1))
-            EquipmentScreen.Instance.OnDeleteClick(EquipmentScreen.Instance.Item1_);   //unequip
-        else
-            EquipmentScreen.Instance.Equip_Item(it1, false);//equip
-
-        if (!TryGetItemByName(Player_Info[0].Item2, out var it2))
-            EquipmentScreen.Instance.OnDeleteClick(EquipmentScreen.Instance.Item2_);
-        else
-            EquipmentScreen.Instance.Equip_Item(it2, false);
-
-        if (!TryGetItemByName(Player_Info[0].Item3, out var it3))
-            EquipmentScreen.Instance.OnDeleteClick(EquipmentScreen.Instance.Item3_);
-        else
-            EquipmentScreen.Instance.Equip_Item(it3, false);
-
-        EquipmentScreen.Instance.GetItem(CurPlayer, false);
-
-        //레벨업 UI 초기화 & 재실행
-        LevelUpScreen.Instance.reset_();
-
-        for (int i = 0; i < 6; i++) LevelUp(RoutineQueueManager.Instance.Lv1[i], 0);
-
+        PlayerChangeOrchestrator.Instance.ApplyAfterPlayerSwitch();
     }
 
     public void LevelUp(GameObject name_, float exp_) //Abs,Arm,Back,Chest,Leg,SHoulder
     {
-        string n = name_.name;
-        float bonus;
-
-        if (n.Contains("Shoulder"))
-        {
-            if (EquipmentScreen.Instance.EXPS_.TryGetValue("ShoulderEXP", out bonus)) exp_ += bonus;
-            Player_Info[0].ShoulderEXP = exp_;
-            LevelUpScreen.Instance.Set_FillAmount(Player_Info[0].ShoulderEXP, Player_Info[0].ShoulderMax, LevelUpScreen.Instance.fills[5]);
-        }
-        else if (n.Contains("Chest"))
-        {
-            if (EquipmentScreen.Instance.EXPS_.TryGetValue("ChestEXP", out bonus)) exp_ += bonus;
-            Player_Info[0].ChestEXP = exp_;
-            LevelUpScreen.Instance.Set_FillAmount(Player_Info[0].ChestEXP, Player_Info[0].ChestMax, LevelUpScreen.Instance.fills[3]);
-        }
-        else if (n.Contains("Arm"))
-        {
-            if (EquipmentScreen.Instance.EXPS_.TryGetValue("ArmEXP", out bonus)) exp_ += bonus;
-            Player_Info[0].ArmEXP = exp_;
-            LevelUpScreen.Instance.Set_FillAmount(Player_Info[0].ArmEXP, Player_Info[0].ArmMax, LevelUpScreen.Instance.fills[1]);
-        }
-        else if (n.Contains("Abs"))
-        {
-            if (EquipmentScreen.Instance.EXPS_.TryGetValue("AbsEXP", out bonus)) exp_ += bonus;
-            Player_Info[0].AbsEXP = exp_;
-            LevelUpScreen.Instance.Set_FillAmount(Player_Info[0].AbsEXP, Player_Info[0].AbsMax, LevelUpScreen.Instance.fills[0]);
-        }
-        else if (n.Contains("Back"))
-        {
-            if (EquipmentScreen.Instance.EXPS_.TryGetValue("BackEXP", out bonus)) exp_ += bonus;
-            Player_Info[0].BackEXP = exp_;
-            LevelUpScreen.Instance.Set_FillAmount(Player_Info[0].BackEXP, Player_Info[0].BackMax, LevelUpScreen.Instance.fills[2]);
-        }
-        else if (n.Contains("Leg"))
-        {
-            if (EquipmentScreen.Instance.EXPS_.TryGetValue("LegEXP", out bonus)) exp_ += bonus;
-            Player_Info[0].LegEXP = exp_;
-            LevelUpScreen.Instance.Set_FillAmount(Player_Info[0].LegEXP, Player_Info[0].LegMax, LevelUpScreen.Instance.fills[4]);
-        }
-        //need checkpoint
-        //SavePlayerDataToJson();
+        if (_playerInfo.Count == 0) return;
+        PlayerRuntimeDataSync.ApplyLevelUp(_playerInfo[0], name_, exp_);
     }
 
     /// <summary>
@@ -302,39 +347,40 @@ public class DataManager : Singleton<DataManager>    //Information
     [SerializeField] float autosaveInterval = 10f;
     Coroutine _autosave;
     void OnEnable() { if (_autosave == null) _autosave = StartCoroutine(AutoSaveLoop()); }
-    void OnDisable() { if (_autosave != null) { StopCoroutine(_autosave); _autosave = null; } SavePlayerDataToJson(); }
-    //void OnApplicationPause(bool p) { if (p) SavePlayerDataToJson(); }
+    void OnDisable() { if (_autosave != null) { StopCoroutine(_autosave); _autosave = null; } SaveCurrentPlayer(); }
+    //void OnApplicationPause(bool p) { if (p) SaveCurrentPlayer(); }
 
     IEnumerator AutoSaveLoop()
     {
         var wait = new WaitForSeconds(autosaveInterval);
-        while (true) { yield return wait; SavePlayerDataToJson(); }
+        while (true) { yield return wait; SaveCurrentPlayer(); }
     }
 
     private bool _legacyPlayerFileMigrated;
     private bool _legacyAllPlayerFileMigrated;
 
-    public void SavePlayerDataToJson()    //Save Load state(player_Info -> json player_info)
+    public void SaveCurrentPlayer()    //Save Load state(player_Info -> json player_info)
     {
         EnsureRepositories();
-        _playerRepository.Save(PlayerInfoFileName, Player_Info);
+        _playerRepository.Save(PlayerInfoFileName, _playerInfo);
     }
 
-    public void SavePlayerDataToAllPlayerJson()    //save Load state(Allplayer_Info -> json Allplayer_info)
+    public void SaveAllPlayers()    //save Load state(Allplayer_Info -> json Allplayer_info)
     {
         EnsureRepositories();
-        _playerRepository.Save(AllPlayerInfoFileName, AllPlayer_Info);
+        _playerRepository.Save(AllPlayerInfoFileName, _allPlayerInfo);
     }
+
 
     void LoadPlayerDataFromJson()    //진행상황 불러오기(json player_info -> 게임player_info)
     {
         EnsureRepositories();
         bool legacy;
-        Player_Info = _playerRepository.Load(PlayerInfoFileName, out legacy);
+        ReplaceCurrentPlayerInfo(_playerRepository.Load(PlayerInfoFileName, out legacy));
         if (legacy && !_legacyPlayerFileMigrated)
         {
             _legacyPlayerFileMigrated = true;
-            SavePlayerDataToJson();
+            SaveCurrentPlayer();
         }
     }
 
@@ -342,55 +388,103 @@ public class DataManager : Singleton<DataManager>    //Information
     {
         EnsureRepositories();
         bool legacy;
-        AllPlayer_Info = _playerRepository.Load(AllPlayerInfoFileName, out legacy);
+        ReplaceAllPlayerInfo(_playerRepository.Load(AllPlayerInfoFileName, out legacy));
         if (legacy && !_legacyAllPlayerFileMigrated)
         {
             _legacyAllPlayerFileMigrated = true;
-            SavePlayerDataToAllPlayerJson();
+            SaveAllPlayers();
         }
     }
 
-    public void SavePlayer1_Item()
+    public void SavePlayerItem(int slot)
     {
         EnsureRepositories();
-        _itemRepository.SaveList(CurItemInfo1FileName, EquipmentScreen.Instance.ItmSlot1);
-    }
-
-    public void SavePlayer2_Item()
-    {
-        EnsureRepositories();
-        _itemRepository.SaveList(CurItemInfo2FileName, EquipmentScreen.Instance.ItmSlot2);
-    }
-
-    public void SavePlayer3_Item()
-    {
-        EnsureRepositories();
-        _itemRepository.SaveList(CurItemInfo3FileName, EquipmentScreen.Instance.ItmSlot3);
+        switch (slot)
+        {
+            case 1:
+                PlayerRuntimeDataSync.SaveEquippedItemSlot(_itemRepository, CurItemInfo1FileName, 1);
+                break;
+            case 2:
+                PlayerRuntimeDataSync.SaveEquippedItemSlot(_itemRepository, CurItemInfo2FileName, 2);
+                break;
+            case 3:
+                PlayerRuntimeDataSync.SaveEquippedItemSlot(_itemRepository, CurItemInfo3FileName, 3);
+                break;
+        }
     }
 
     public void FormatAllPlayerData()
     {
         EnsureRepositories();
-        AllPlayer_Info.Clear();
-        Player_Info.Clear();
-        EquipmentScreen.Instance.ItmSlot1.Clear();
-        EquipmentScreen.Instance.ItmSlot2.Clear();
-        EquipmentScreen.Instance.ItmSlot3.Clear();
+        _allPlayerInfo.Clear();
+        _playerInfo.Clear();
+        PlayerRuntimeDataSync.ClearEquipmentAndPersistEmpty(
+            _fileStore,
+            _itemRepository,
+            CurItemInfo1FileName,
+            CurItemInfo2FileName,
+            CurItemInfo3FileName);
 
-        var empty = _itemRepository.EmptyListJson();
-        _fileStore.Write(CurItemInfo1FileName, empty);
-        _fileStore.Write(CurItemInfo2FileName, empty);
-        _fileStore.Write(CurItemInfo3FileName, empty);
+        ReplaceAllPlayerInfo(_playerDataService.CreateDefaultPlayers());
 
-        AllPlayer_Info.Add(new PlayerData("1", "100", "0", "1", "", "", "", 0, 0, 0, 0, 0, 0));
-        AllPlayer_Info.Add(new PlayerData("2", "100", "0", "1", "", "", "", 0, 0, 0, 0, 0, 0));
-        AllPlayer_Info.Add(new PlayerData("3", "100", "0", "1", "", "", "", 0, 0, 0, 0, 0, 0));
-
-        SavePlayerDataToAllPlayerJson();
-        if (string.IsNullOrEmpty(CurPlayer)) CurPlayer = "1";
-        var target = AllPlayer_Info.Find(p => p.name == CurPlayer) ?? AllPlayer_Info[0];
-        Player_Info = new List<PlayerData> { target };
-        SavePlayerDataToJson();
+        SaveAllPlayers();
+        var target = _playerDataService.EnsureCurrentPlayer(_allPlayerInfo, CurPlayer, out var resolvedCurPlayer);
+        CurPlayer = resolvedCurPlayer;
+        SetCurrentPlayer(target);
+        SaveCurrentPlayer();
         //need end game button
+    }
+
+    private void ReplaceAllPlayerInfo(List<PlayerData> source)
+    {
+        _allPlayerInfo.Clear();
+        if (source == null) return;
+        _allPlayerInfo.AddRange(source);
+    }
+
+    private void ReplaceCurrentPlayerInfo(List<PlayerData> source)
+    {
+        _playerInfo.Clear();
+        if (source == null) return;
+        _playerInfo.AddRange(source);
+    }
+
+    private void SetCurrentPlayer(PlayerData player)
+    {
+        _playerInfo.Clear();
+        if (player != null) _playerInfo.Add(player);
+    }
+
+    public void SetResourceProvider(IDataResourceProvider provider)
+    {
+        _resourceProvider = provider ?? new UnityDataResourceProvider();
+    }
+
+    public void SetItemStore(IItemStore store)
+    {
+        if (_fileStore == null) EnsureRepositories();
+        _itemRepository = store ?? new ItemRepository(_fileStore);
+    }
+
+    public void SetPlayerStore(IPlayerStore store)
+    {
+        if (_fileStore == null) EnsureRepositories();
+        _playerRepository = store ?? new PlayerRepository(_fileStore);
+    }
+
+    private readonly struct InitStepResult
+    {
+        public string WarningMessage { get; }
+
+        private InitStepResult(string warningMessage)
+        {
+            WarningMessage = warningMessage;
+        }
+
+        public static InitStepResult FromWarnings(List<string> warnings)
+        {
+            if (warnings == null || warnings.Count == 0) return new InitStepResult(null);
+            return new InitStepResult(string.Join("\n", warnings));
+        }
     }
 }

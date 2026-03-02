@@ -17,6 +17,7 @@ public class ItemExplain : Singleton<ItemExplain>
     private Image[][] EXPS = new Image[8][];
     private Dictionary<string, Sprite> _spriteByName;
     private Dictionary<string, ItemData> _itemByName;
+    private string _currentItemName = string.Empty;
     private enum StatVar
     {
         Ene, Fat, Abs, Arm, Back, Chest, Leg, Shoulder, Time, Unknown
@@ -52,7 +53,7 @@ public class ItemExplain : Singleton<ItemExplain>
             if (s != null && !_spriteByName.ContainsKey(s.name)) _spriteByName.Add(s.name, s);
 
         _itemByName = new Dictionary<string, ItemData>(StringComparer.Ordinal);
-        foreach (var itm in DataManager.Instance.Items)
+        foreach (var itm in DataManager.Instance.GetItems())
             if (itm != null && !_itemByName.ContainsKey(itm.name)) _itemByName.Add(itm.name, itm);
 
         if (ToEquipMent != null) ToEquipMent.onClick.RemoveAllListeners(); //Selg Remove for Safety
@@ -60,10 +61,7 @@ public class ItemExplain : Singleton<ItemExplain>
     }
     void OnEnable()
     {
-        bool alreadyEquipped =
-    DataManager.Instance.Player_Info[0].Item1 == name ||
-    DataManager.Instance.Player_Info[0].Item2 == name ||
-    DataManager.Instance.Player_Info[0].Item3 == name;
+        bool alreadyEquipped = DataManager.Instance.IsCurrentPlayerItemEquipped(_currentItemName);
         if (alreadyEquipped)
         {
             ToEquipMent.GetComponent<Image>().sprite = YesBtnImg[1];
@@ -78,6 +76,7 @@ public class ItemExplain : Singleton<ItemExplain>
         string name = rawName.EndsWith("(Clone)", StringComparison.Ordinal)
             ? rawName.AsSpan(0, rawName.Length - "(Clone)".Length).ToString()
             : rawName;
+        _currentItemName = name;
 
         // 스프라이트/텍스트
         if (_spriteByName != null && _spriteByName.TryGetValue(name, out var spr))
@@ -121,10 +120,7 @@ public class ItemExplain : Singleton<ItemExplain>
         // 장착 불가 상태 표시 & 리스너 재배선
         if (ToEquipMent != null)
         {
-            bool alreadyEquipped =
-                DataManager.Instance.Player_Info[0].Item1 == name ||
-                DataManager.Instance.Player_Info[0].Item2 == name ||
-                DataManager.Instance.Player_Info[0].Item3 == name;
+            bool alreadyEquipped = DataManager.Instance.IsCurrentPlayerItemEquipped(name);
 
             ToEquipMent.interactable = !alreadyEquipped;
             if (alreadyEquipped && YesBtnImg[1] != null)

@@ -269,7 +269,12 @@ public class Shop : Singleton<Shop>
     bool Buy(string name, string number, int many, float exp, GameObject place)
     {   //to buy thing / Fee / Fee / clicked button
 
-        var p = DataManager.Instance.Player_Info[0];
+        var p = DataManager.Instance.GetCurrentPlayer();
+        if (p == null)
+        {
+            Cnt_buy.SetActive(true);
+            return false;
+        }
         var btn = place ? place.GetComponent<Button>() : null;
         switch (number)
         {
@@ -470,7 +475,7 @@ public class Shop : Singleton<Shop>
 
     bool IfOverlapItem(GameObject item)
     {
-        switch (int.Parse(DataManager.Instance.CurPlayer))
+        switch (int.Parse(DataManager.Instance.GetCurrentPlayerId()))
         {
             case 1:
                 ItemData thing = EquipmentScreen.Instance.ItmSlot1.Find(x => x.name == item.name);

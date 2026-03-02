@@ -267,8 +267,8 @@ PlayerSettings:
   AndroidTargetArchitectures: 2
   AndroidSplashScreenScale: 0
   androidSplashScreen: {fileID: 0}
-  AndroidKeystoreName: '0'
-  AndroidKeyaliasName: 0
+  AndroidKeystoreName: '{inproject}: user.keystore'
+  AndroidKeyaliasName: fitness_key
   AndroidEnableArmv9SecurityFeatures: 0
   AndroidEnableArm64MTE: 0
   AndroidBuildApkPerCpuArchitecture: 0
@@ -803,11 +803,11 @@ PlayerSettings:
   captureStartupLogs: {}
   activeInputHandler: 1
   windowsGamepadBackendHint: 0
-  cloudProjectId: 0
+  cloudProjectId: 909d0106-91f0-4c75-a792-9209b53297a9
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
   projectName: Fitness_game 2025-01-09_19-14-34
-  organizationId: 0
+  organizationId: kimdong3139
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}

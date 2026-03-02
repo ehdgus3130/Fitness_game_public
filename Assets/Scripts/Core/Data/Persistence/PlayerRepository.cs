@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using UnityEngine;
 
-public sealed class PlayerRepository
+public sealed class PlayerRepository : IPlayerStore
 {
     private readonly JsonFileStore _store;
 

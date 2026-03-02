@@ -51,7 +51,7 @@ public class AlreadyOwnedItemGet : MonoBehaviour
             if (s != null && !_spriteByName.ContainsKey(s.name)) _spriteByName.Add(s.name, s);
 
         _itemByName = new Dictionary<string, ItemData>(StringComparer.Ordinal);
-        foreach (var itm in DataManager.Instance.Items)
+        foreach (var itm in DataManager.Instance.GetItems())
             if (itm != null && !_itemByName.ContainsKey(itm.name)) _itemByName.Add(itm.name, itm);
 
     }

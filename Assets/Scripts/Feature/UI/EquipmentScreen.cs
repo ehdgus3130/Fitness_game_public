@@ -47,28 +47,31 @@ public class EquipmentScreen : Singleton<EquipmentScreen>
 
     public Dictionary<string, float> EXPS_ = new Dictionary<string, float>();
     enum exp { ene, fat, AbsEXP, ArmEXP, BackEXP, ChestEXP, LegEXP, ShoulderEXP };
+    private PlayerData CurrentPlayer => DataManager.Instance.GetCurrentPlayer();
+
     private IEnumerator Start()
     {
         yield return new WaitUntil(() =>
         DataManager.Instance && DataManager.Instance.IsInitialized);
+        if (CurrentPlayer == null) yield break;
         TabClick(0);
-        muscleItem = DataManager.Instance.muscleItem;
-        if (DataManager.Instance.Player_Info[0].Item1 != "" || DataManager.Instance.Player_Info[0].Item2 != ""
-            || DataManager.Instance.Player_Info[0].Item3 != "")
+        muscleItem = DataManager.Instance.MuscleItems;
+        if (CurrentPlayer.Item1 != "" || CurrentPlayer.Item2 != ""
+            || CurrentPlayer.Item3 != "")
         {
-            if (DataManager.Instance.Player_Info[0].Item1 != "")
+            if (CurrentPlayer.Item1 != "")
             {
-                ItemData cur = DataManager.Instance.Items.Find(x => x.name == DataManager.Instance.Player_Info[0].Item1);
+                ItemData cur = DataManager.Instance.FindItemByName(CurrentPlayer.Item1);
                 Equip_Item(cur, true);
             }
-            if (DataManager.Instance.Player_Info[0].Item2 != "")
+            if (CurrentPlayer.Item2 != "")
             {
-                ItemData cur = DataManager.Instance.Items.Find(x => x.name == DataManager.Instance.Player_Info[0].Item2);
+                ItemData cur = DataManager.Instance.FindItemByName(CurrentPlayer.Item2);
                 Equip_Item(cur, true);
             }
-            if (DataManager.Instance.Player_Info[0].Item1 != "")
+            if (CurrentPlayer.Item1 != "")
             {
-                ItemData cur = DataManager.Instance.Items.Find(x => x.name == DataManager.Instance.Player_Info[0].Item3);
+                ItemData cur = DataManager.Instance.FindItemByName(CurrentPlayer.Item3);
                 Equip_Item(cur, true);
             }
         }
@@ -105,7 +108,7 @@ public class EquipmentScreen : Singleton<EquipmentScreen>
         Character2.onClick.AddListener(() => DataManager.Instance.ChangePlayer(2));
         Character3.onClick.AddListener(() => DataManager.Instance.ChangePlayer(3));
 
-        string name = DataManager.Instance.CurPlayer;
+        string name = DataManager.Instance.GetCurrentPlayerId();
         int num = int.Parse(name);
         DataManager.Instance.ChangePlayer(num);
     }
@@ -151,12 +154,12 @@ public class EquipmentScreen : Singleton<EquipmentScreen>
         if (Isin)   //Get item, Begin game 
         {
 
-            ItemData _Get = DataManager.Instance.Items.Find(x => x.name == NewItem);     //������ �������ִ��� Ȯ��
-            if (DataManager.Instance.Player_Info[0].name == "1")
+            ItemData _Get = DataManager.Instance.FindItemByName(NewItem);     //������ �������ִ��� Ȯ��
+            if (CurrentPlayer.name == "1")
                 ItmSlot1.Add(new ItemData(_Get.name, _Get.var, _Get.effect, _Get.rate, _Get.explain));
-            else if (DataManager.Instance.Player_Info[0].name == "2")
+            else if (CurrentPlayer.name == "2")
                 ItmSlot2.Add(new ItemData(_Get.name, _Get.var, _Get.effect, _Get.rate, _Get.explain));
-            else if (DataManager.Instance.Player_Info[0].name == "3")
+            else if (CurrentPlayer.name == "3")
                 ItmSlot3.Add(new ItemData(_Get.name, _Get.var, _Get.effect, _Get.rate, _Get.explain));
 
             GameObject getone = Instantiate(PrefabItem, ItmPos);
@@ -235,7 +238,7 @@ public class EquipmentScreen : Singleton<EquipmentScreen>
     {
         if (JustDo)
         {
-            if (DataManager.Instance.Player_Info[0].Item1 == "")
+            if (CurrentPlayer.Item1 == "")
             {
                 Data_Item_Save(_name.name, true, 1);
                 Item1_[0].GetComponent<Image>().sprite = System.Array.Find(muscleItem, x => x.name == _name.name);
@@ -245,7 +248,7 @@ public class EquipmentScreen : Singleton<EquipmentScreen>
             }
             else
             {
-                if (DataManager.Instance.Player_Info[0].Item2 == "")
+                if (CurrentPlayer.Item2 == "")
                 {
                     Data_Item_Save(_name.name, true, 2);
                     Item2_[0].GetComponent<Image>().sprite = System.Array.Find(muscleItem, x => x.name == _name.name);
@@ -255,7 +258,7 @@ public class EquipmentScreen : Singleton<EquipmentScreen>
                 }
                 else
                 {
-                    if (DataManager.Instance.Player_Info[0].Item3 == "")
+                    if (CurrentPlayer.Item3 == "")
                     {
                         Data_Item_Save(_name.name, true, 3);
                         Item3_[0].GetComponent<Image>().sprite = System.Array.Find(muscleItem, x => x.name == _name.name);
@@ -268,7 +271,7 @@ public class EquipmentScreen : Singleton<EquipmentScreen>
         }
         else
         {
-            if (DataManager.Instance.Player_Info[0].Item1 == _name.name)
+            if (CurrentPlayer.Item1 == _name.name)
             {
                 Data_Item_Save(_name.name, true, 1);
                 Item1_[0].GetComponent<Image>().sprite = System.Array.Find(muscleItem, x => x.name == _name.name);
@@ -278,7 +281,7 @@ public class EquipmentScreen : Singleton<EquipmentScreen>
             }
             else
             {
-                if (DataManager.Instance.Player_Info[0].Item2 == _name.name)
+                if (CurrentPlayer.Item2 == _name.name)
                 {
                     Data_Item_Save(_name.name, true, 2);
                     Item2_[0].GetComponent<Image>().sprite = System.Array.Find(muscleItem, x => x.name == _name.name);
@@ -288,7 +291,7 @@ public class EquipmentScreen : Singleton<EquipmentScreen>
                 }
                 else
                 {
-                    if (DataManager.Instance.Player_Info[0].Item3 == _name.name)
+                    if (CurrentPlayer.Item3 == _name.name)
                     {
                         Data_Item_Save(_name.name, true, 3);
                         Item3_[0].GetComponent<Image>().sprite = System.Array.Find(muscleItem, x => x.name == _name.name);
@@ -412,7 +415,7 @@ public class EquipmentScreen : Singleton<EquipmentScreen>
     /// <param name="Parent"> Item slot 1 or 2 or 3 </param>
     public void OnDeleteClick(GameObject[] Parent)
     {
-        ItemData cur = DataManager.Instance.Items.Find(x => x.name == Parent[1].GetComponent<TMP_Text>().text);
+        ItemData cur = DataManager.Instance.FindItemByName(Parent[1].GetComponent<TMP_Text>().text);
         if (cur != null) AddEXP(cur.var, cur.effect, false);
 
         if (Parent == Item1_) { Data_Item_Save(Parent[1].name, false, 1); }
@@ -434,26 +437,18 @@ public class EquipmentScreen : Singleton<EquipmentScreen>
             switch (where)
             {
                 case 1:
-                    DataManager.Instance.Player_Info[0].Item1 = name;
+                    DataManager.Instance.SetCurrentPlayerItem(1, name);
                     break;
                 case 2:
-                    DataManager.Instance.Player_Info[0].Item2 = name;
+                    DataManager.Instance.SetCurrentPlayerItem(2, name);
                     break;
                 case 3:
-                    DataManager.Instance.Player_Info[0].Item3 = name;
+                    DataManager.Instance.SetCurrentPlayerItem(3, name);
                     break;
                 case 4:
-                    switch (DataManager.Instance.Player_Info[0].name)
+                    if (int.TryParse(DataManager.Instance.GetCurrentPlayerId(), out var slot))
                     {
-                        case "1":
-                            DataManager.Instance.SavePlayer1_Item();
-                            break;
-                        case "2":
-                            DataManager.Instance.SavePlayer2_Item();
-                            break;
-                        case "3":
-                            DataManager.Instance.SavePlayer3_Item();
-                            break;
+                        DataManager.Instance.SavePlayerItem(slot);
                     }
                     break;
 
@@ -464,13 +459,13 @@ public class EquipmentScreen : Singleton<EquipmentScreen>
             switch (where)
             {
                 case 1:
-                    DataManager.Instance.Player_Info[0].Item1 = "";
+                    DataManager.Instance.ClearCurrentPlayerItem(1);
                     break;
                 case 2:
-                    DataManager.Instance.Player_Info[0].Item2 = "";
+                    DataManager.Instance.ClearCurrentPlayerItem(2);
                     break;
                 case 3:
-                    DataManager.Instance.Player_Info[0].Item3 = "";
+                    DataManager.Instance.ClearCurrentPlayerItem(3);
                     break;
             }
         }

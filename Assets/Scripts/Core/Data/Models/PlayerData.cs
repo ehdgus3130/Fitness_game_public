@@ -1,6 +1,4 @@
 using System;
-using TMPro;
-using UnityEngine;
 [System.Serializable]
 public class PlayerData //json for player information
 {
@@ -9,6 +7,16 @@ public class PlayerData //json for player information
     public string Item1, Item2, Item3;
 
     private float[] Lvs = new float[6]; //Abs,Arm,Back,Chest,Leg,SHoulder
+
+    public static Action<int> MuscleLevelUpHandler { get; set; }
+    public static Action GiftBoxCountUpHandler { get; set; }
+    public static Action<string, float> ScoreChangedHandler { get; set; }
+    public static Action<int> MuscleRecalculateHandler { get; set; }
+
+    private static void NotifyMuscleLevelUp(int muscleIndex) => MuscleLevelUpHandler?.Invoke(muscleIndex);
+    private static void NotifyGiftBoxCountUp() => GiftBoxCountUpHandler?.Invoke();
+    private static void NotifyScoreChanged(string muscleName, float level) => ScoreChangedHandler?.Invoke(muscleName, level);
+    private static void RequestMuscleRecalculate(int muscleIndex) => MuscleRecalculateHandler?.Invoke(muscleIndex);
 
     private float AbsExp;
     public float AbsMax;
@@ -31,8 +39,8 @@ public class PlayerData //json for player information
                 Lvs[0]++;
                 AbsExp = AbsExp - AbsMax;
                 AbsMax = 2000;
-                LevelUpScreen.Instance.ShowLevelUP(LevelUpScreen.Instance.fills[0].gameObject);
-                Shop.Instance.GiftBoxCntUP();
+                NotifyMuscleLevelUp(0);
+                NotifyGiftBoxCountUp();
 
             }
             else if (AbsExp >= 5000 && Lvs[0] < 25)   //10 to 25
@@ -40,8 +48,8 @@ public class PlayerData //json for player information
                 Lvs[0]++;
                 AbsExp = AbsExp - AbsMax;
                 AbsMax = 5000;
-                LevelUpScreen.Instance.ShowLevelUP(LevelUpScreen.Instance.fills[0].gameObject);
-                Shop.Instance.GiftBoxCntUP();
+                NotifyMuscleLevelUp(0);
+                NotifyGiftBoxCountUp();
 
             }
             else if (AbsExp >= 10000 && Lvs[0] < 75)  //25 to 75
@@ -49,8 +57,8 @@ public class PlayerData //json for player information
                 Lvs[0]++;
                 AbsExp = AbsExp - AbsMax;
                 AbsMax = 10000;
-                LevelUpScreen.Instance.ShowLevelUP(LevelUpScreen.Instance.fills[0].gameObject);
-                Shop.Instance.GiftBoxCntUP();
+                NotifyMuscleLevelUp(0);
+                NotifyGiftBoxCountUp();
 
             }
             else if (AbsExp >= 15000 && Lvs[0] < 90)    //75 to 90
@@ -58,8 +66,8 @@ public class PlayerData //json for player information
                 Lvs[0]++;
                 AbsExp = AbsExp - AbsMax;
                 AbsMax = 15000;
-                LevelUpScreen.Instance.ShowLevelUP(LevelUpScreen.Instance.fills[0].gameObject);
-                Shop.Instance.GiftBoxCntUP();
+                NotifyMuscleLevelUp(0);
+                NotifyGiftBoxCountUp();
 
             }
             else if (AbsExp >= 20000 && Lvs[0] == 99)
@@ -67,8 +75,8 @@ public class PlayerData //json for player information
                 Lvs[0] = 100;
                 AbsExp = 0;
                 AbsMax = 0;
-                LevelUpScreen.Instance.ShowLevelUP(LevelUpScreen.Instance.fills[0].gameObject);
-                Shop.Instance.GiftBoxCntUP();
+                NotifyMuscleLevelUp(0);
+                NotifyGiftBoxCountUp();
 
             }
             else if (AbsExp >= 17000 && Lvs[0] < 100)   //90 to 100
@@ -76,13 +84,12 @@ public class PlayerData //json for player information
                 Lvs[0]++;
                 AbsExp = AbsExp - AbsMax;
                 AbsMax = 17000;
-                LevelUpScreen.Instance.ShowLevelUP(LevelUpScreen.Instance.fills[0].gameObject);
-                Shop.Instance.GiftBoxCntUP();
+                NotifyMuscleLevelUp(0);
+                NotifyGiftBoxCountUp();
 
             }
 
-            GameObject text_ = Array.Find(LevelUpScreen.Instance.ScoreList, x => x.name == "Abs");
-            text_.transform.GetChild(0).GetComponent<TMP_Text>().text = Lvs[0].ToString();
+            NotifyScoreChanged("Abs", Lvs[0]);
         }
     }
     public float AbsLV      //minus func
@@ -121,7 +128,7 @@ public class PlayerData //json for player information
                 AbsMax = 17000;
                 AbsExp = AbsMax + AbsExp;
             }
-            DataManager.Instance.LevelUp(RoutineQueueManager.Instance.Lv1[0], 0);
+            RequestMuscleRecalculate(0);
         }
     }
 
@@ -146,51 +153,50 @@ public class PlayerData //json for player information
                 Lvs[1]++;
                 ArmExp = ArmExp - ArmMax;
                 ArmMax = 2000;
-                LevelUpScreen.Instance.ShowLevelUP(LevelUpScreen.Instance.fills[1].gameObject);
-                Shop.Instance.GiftBoxCntUP();
+                NotifyMuscleLevelUp(1);
+                NotifyGiftBoxCountUp();
             }
             else if (ArmExp >= 5000 && Lvs[1] < 25)   //10 to 25
             {
                 Lvs[1]++;
                 ArmExp = ArmExp - ArmMax;
                 ArmMax = 5000;
-                LevelUpScreen.Instance.ShowLevelUP(LevelUpScreen.Instance.fills[1].gameObject);
-                Shop.Instance.GiftBoxCntUP();
+                NotifyMuscleLevelUp(1);
+                NotifyGiftBoxCountUp();
             }
             else if (ArmExp >= 10000 && Lvs[1] < 75)  //25 to 75
             {
                 Lvs[1]++;
                 ArmExp = ArmExp - ArmMax;
                 ArmMax = 10000;
-                LevelUpScreen.Instance.ShowLevelUP(LevelUpScreen.Instance.fills[1].gameObject);
-                Shop.Instance.GiftBoxCntUP();
+                NotifyMuscleLevelUp(1);
+                NotifyGiftBoxCountUp();
             }
             else if (ArmExp >= 15000 && Lvs[1] < 90)    //75 to 90
             {
                 Lvs[1]++;
                 ArmExp = ArmExp - ArmMax;
                 ArmMax = 15000;
-                LevelUpScreen.Instance.ShowLevelUP(LevelUpScreen.Instance.fills[1].gameObject);
-                Shop.Instance.GiftBoxCntUP();
+                NotifyMuscleLevelUp(1);
+                NotifyGiftBoxCountUp();
             }
             else if (ArmExp >= 20000 && Lvs[1] == 99)
             {
                 Lvs[1] = 100;
                 ArmExp = 0;
                 ArmMax = 0;
-                LevelUpScreen.Instance.ShowLevelUP(LevelUpScreen.Instance.fills[1].gameObject);
-                Shop.Instance.GiftBoxCntUP();
+                NotifyMuscleLevelUp(1);
+                NotifyGiftBoxCountUp();
             }
             else if (ArmExp >= 17000 && Lvs[1] < 100)   //90 to 100
             {
                 Lvs[1]++;
                 ArmExp = ArmExp - ArmMax;
                 ArmMax = 17000;
-                LevelUpScreen.Instance.ShowLevelUP(LevelUpScreen.Instance.fills[1].gameObject);
-                Shop.Instance.GiftBoxCntUP();
+                NotifyMuscleLevelUp(1);
+                NotifyGiftBoxCountUp();
             }
-            GameObject text_ = Array.Find(LevelUpScreen.Instance.ScoreList, x => x.name == "Arm");
-            text_.transform.GetChild(0).GetComponent<TMP_Text>().text = Lvs[1].ToString();
+            NotifyScoreChanged("Arm", Lvs[1]);
         }
     }
     public float ArmLV
@@ -229,7 +235,7 @@ public class PlayerData //json for player information
                 ArmMax = 17000;
                 ArmExp = ArmMax + ArmExp;
             }
-            DataManager.Instance.LevelUp(RoutineQueueManager.Instance.Lv1[1], 0);
+            RequestMuscleRecalculate(1);
 
         }
     }
@@ -255,51 +261,50 @@ public class PlayerData //json for player information
                 Lvs[2]++;
                 BackExp = BackExp - BackMax;
                 BackMax = 2000;
-                LevelUpScreen.Instance.ShowLevelUP(LevelUpScreen.Instance.fills[2].gameObject);
-                Shop.Instance.GiftBoxCntUP();
+                NotifyMuscleLevelUp(2);
+                NotifyGiftBoxCountUp();
             }
             else if (BackExp >= 5000 && Lvs[2] < 25)   //10 to 25
             {
                 Lvs[2]++;
                 BackExp = BackExp - BackMax;
                 BackMax = 5000;
-                LevelUpScreen.Instance.ShowLevelUP(LevelUpScreen.Instance.fills[2].gameObject);
-                Shop.Instance.GiftBoxCntUP();
+                NotifyMuscleLevelUp(2);
+                NotifyGiftBoxCountUp();
             }
             else if (BackExp >= 10000 && Lvs[2] < 75)  //25 to 75
             {
                 Lvs[2]++;
                 BackExp = BackExp - BackMax;
                 BackMax = 10000;
-                LevelUpScreen.Instance.ShowLevelUP(LevelUpScreen.Instance.fills[2].gameObject);
-                Shop.Instance.GiftBoxCntUP();
+                NotifyMuscleLevelUp(2);
+                NotifyGiftBoxCountUp();
             }
             else if (BackExp >= 15000 && Lvs[2] < 90)    //75 to 90
             {
                 Lvs[2]++;
                 BackExp = BackExp - BackMax;
                 BackMax = 15000;
-                LevelUpScreen.Instance.ShowLevelUP(LevelUpScreen.Instance.fills[2].gameObject);
-                Shop.Instance.GiftBoxCntUP();
+                NotifyMuscleLevelUp(2);
+                NotifyGiftBoxCountUp();
             }
             else if (BackExp >= 20000 && Lvs[2] == 99)
             {
                 Lvs[2] = 100;
                 BackExp = 0;
                 BackMax = 0;
-                LevelUpScreen.Instance.ShowLevelUP(LevelUpScreen.Instance.fills[2].gameObject);
-                Shop.Instance.GiftBoxCntUP();
+                NotifyMuscleLevelUp(2);
+                NotifyGiftBoxCountUp();
             }
             else if (BackExp >= 17000 && Lvs[2] < 100)   //90 to 100
             {
                 Lvs[2]++;
                 BackExp = BackExp - BackMax;
                 BackMax = 17000;
-                LevelUpScreen.Instance.ShowLevelUP(LevelUpScreen.Instance.fills[2].gameObject);
-                Shop.Instance.GiftBoxCntUP();
+                NotifyMuscleLevelUp(2);
+                NotifyGiftBoxCountUp();
             }
-            GameObject text_ = Array.Find(LevelUpScreen.Instance.ScoreList, x => x.name == "Back");
-            text_.transform.GetChild(0).GetComponent<TMP_Text>().text = Lvs[2].ToString();
+            NotifyScoreChanged("Back", Lvs[2]);
         }
     }
     public float BackLV
@@ -338,7 +343,7 @@ public class PlayerData //json for player information
                 BackMax = 17000;
                 BackExp = BackMax + BackExp;
             }
-            DataManager.Instance.LevelUp(RoutineQueueManager.Instance.Lv1[2], 0);
+            RequestMuscleRecalculate(2);
 
         }
     }
@@ -364,51 +369,50 @@ public class PlayerData //json for player information
                 Lvs[3]++;
                 ChestExp = ChestExp - ChestMax;
                 ChestMax = 2000;
-                LevelUpScreen.Instance.ShowLevelUP(LevelUpScreen.Instance.fills[3].gameObject);
-                Shop.Instance.GiftBoxCntUP();
+                NotifyMuscleLevelUp(3);
+                NotifyGiftBoxCountUp();
             }
             else if (ChestExp >= 5000 && Lvs[3] < 25)   //10 to 25
             {
                 Lvs[3]++;
                 ChestExp = ChestExp - ChestMax;
                 ChestMax = 5000;
-                LevelUpScreen.Instance.ShowLevelUP(LevelUpScreen.Instance.fills[3].gameObject);
-                Shop.Instance.GiftBoxCntUP();
+                NotifyMuscleLevelUp(3);
+                NotifyGiftBoxCountUp();
             }
             else if (ChestExp >= 10000 && Lvs[3] < 75)  //25 to 75
             {
                 Lvs[3]++;
                 ChestExp = ChestExp - ChestMax;
                 ChestMax = 10000;
-                LevelUpScreen.Instance.ShowLevelUP(LevelUpScreen.Instance.fills[3].gameObject);
-                Shop.Instance.GiftBoxCntUP();
+                NotifyMuscleLevelUp(3);
+                NotifyGiftBoxCountUp();
             }
             else if (ChestExp >= 15000 && Lvs[3] < 90)    //75 to 90
             {
                 Lvs[3]++;
                 ChestExp = ChestExp - ChestMax;
                 ChestMax = 15000;
-                LevelUpScreen.Instance.ShowLevelUP(LevelUpScreen.Instance.fills[3].gameObject);
-                Shop.Instance.GiftBoxCntUP();
+                NotifyMuscleLevelUp(3);
+                NotifyGiftBoxCountUp();
             }
             else if (ChestExp >= 20000 && Lvs[3] == 99)
             {
                 Lvs[3] = 100;
                 ChestExp = 0;
                 ChestMax = 0;
-                LevelUpScreen.Instance.ShowLevelUP(LevelUpScreen.Instance.fills[3].gameObject);
-                Shop.Instance.GiftBoxCntUP();
+                NotifyMuscleLevelUp(3);
+                NotifyGiftBoxCountUp();
             }
             else if (ChestExp >= 17000 && Lvs[3] < 100)   //90 to 100
             {
                 Lvs[3]++;
                 ChestExp = ChestExp - ChestMax;
                 ChestMax = 17000;
-                LevelUpScreen.Instance.ShowLevelUP(LevelUpScreen.Instance.fills[3].gameObject);
-                Shop.Instance.GiftBoxCntUP();
+                NotifyMuscleLevelUp(3);
+                NotifyGiftBoxCountUp();
             }
-            GameObject text_ = Array.Find(LevelUpScreen.Instance.ScoreList, x => x.name == "Chest");
-            text_.transform.GetChild(0).GetComponent<TMP_Text>().text = Lvs[3].ToString();
+            NotifyScoreChanged("Chest", Lvs[3]);
         }
     }
     public float ChestLV
@@ -447,7 +451,7 @@ public class PlayerData //json for player information
                 ChestMax = 17000;
                 ChestExp = ChestMax + ChestExp;
             }
-            DataManager.Instance.LevelUp(RoutineQueueManager.Instance.Lv1[3], 0);
+            RequestMuscleRecalculate(3);
         }
     }
 
@@ -471,51 +475,50 @@ public class PlayerData //json for player information
                 Lvs[4]++;
                 LegExp = LegExp - LegMax;
                 LegMax = 2000;
-                LevelUpScreen.Instance.ShowLevelUP(LevelUpScreen.Instance.fills[4].gameObject);
-                Shop.Instance.GiftBoxCntUP();
+                NotifyMuscleLevelUp(4);
+                NotifyGiftBoxCountUp();
             }
             else if (LegExp >= 5000 && Lvs[4] < 25)   //10 to 25
             {
                 Lvs[4]++;
                 LegExp = LegExp - LegMax;
                 LegMax = 5000;
-                LevelUpScreen.Instance.ShowLevelUP(LevelUpScreen.Instance.fills[4].gameObject);
-                Shop.Instance.GiftBoxCntUP();
+                NotifyMuscleLevelUp(4);
+                NotifyGiftBoxCountUp();
             }
             else if (LegExp >= 10000 && Lvs[4] < 75)  //25 to 75
             {
                 Lvs[4]++;
                 LegExp = LegExp - LegMax;
                 LegMax = 10000;
-                LevelUpScreen.Instance.ShowLevelUP(LevelUpScreen.Instance.fills[4].gameObject);
-                Shop.Instance.GiftBoxCntUP();
+                NotifyMuscleLevelUp(4);
+                NotifyGiftBoxCountUp();
             }
             else if (LegExp >= 15000 && Lvs[4] < 90)    //75 to 90
             {
                 Lvs[4]++;
                 LegExp = LegExp - LegMax;
                 LegMax = 15000;
-                LevelUpScreen.Instance.ShowLevelUP(LevelUpScreen.Instance.fills[4].gameObject);
-                Shop.Instance.GiftBoxCntUP();
+                NotifyMuscleLevelUp(4);
+                NotifyGiftBoxCountUp();
             }
             else if (LegExp >= 20000 && Lvs[4] == 99)
             {
                 Lvs[4] = 100;
                 LegExp = 0;
                 LegMax = 0;
-                LevelUpScreen.Instance.ShowLevelUP(LevelUpScreen.Instance.fills[4].gameObject);
-                Shop.Instance.GiftBoxCntUP();
+                NotifyMuscleLevelUp(4);
+                NotifyGiftBoxCountUp();
             }
             else if (LegExp >= 17000 && Lvs[4] < 100)   //90 to 100
             {
                 Lvs[4]++;
                 LegExp = LegExp - LegMax;
                 LegMax = 17000;
-                LevelUpScreen.Instance.ShowLevelUP(LevelUpScreen.Instance.fills[4].gameObject);
-                Shop.Instance.GiftBoxCntUP();
+                NotifyMuscleLevelUp(4);
+                NotifyGiftBoxCountUp();
             }
-            GameObject text_ = Array.Find(LevelUpScreen.Instance.ScoreList, x => x.name == "Leg");
-            text_.transform.GetChild(0).GetComponent<TMP_Text>().text = Lvs[4].ToString();
+            NotifyScoreChanged("Leg", Lvs[4]);
         }
     }
     public float LegLV
@@ -554,7 +557,7 @@ public class PlayerData //json for player information
                 LegMax = 17000;
                 LegExp = LegMax + LegExp;
             }
-            DataManager.Instance.LevelUp(RoutineQueueManager.Instance.Lv1[4], 0);
+            RequestMuscleRecalculate(4);
         }
     }
 
@@ -578,51 +581,50 @@ public class PlayerData //json for player information
                 Lvs[5]++;
                 ShoulderExp = ShoulderExp - ShoulderMax;
                 ShoulderMax = 2000;
-                LevelUpScreen.Instance.ShowLevelUP(LevelUpScreen.Instance.fills[5].gameObject);
-                Shop.Instance.GiftBoxCntUP();
+                NotifyMuscleLevelUp(5);
+                NotifyGiftBoxCountUp();
             }
             else if (ShoulderExp >= 5000 && Lvs[5] < 25)   //10 to 25
             {
                 Lvs[5]++;
                 ShoulderExp = ShoulderExp - ShoulderMax;
                 ShoulderMax = 5000;
-                LevelUpScreen.Instance.ShowLevelUP(LevelUpScreen.Instance.fills[5].gameObject);
-                Shop.Instance.GiftBoxCntUP();
+                NotifyMuscleLevelUp(5);
+                NotifyGiftBoxCountUp();
             }
             else if (ShoulderExp >= 10000 && Lvs[5] < 75)  //25 to 75
             {
                 Lvs[5]++;
                 ShoulderExp = ShoulderExp - ShoulderMax;
                 ShoulderMax = 10000;
-                LevelUpScreen.Instance.ShowLevelUP(LevelUpScreen.Instance.fills[5].gameObject);
-                Shop.Instance.GiftBoxCntUP();
+                NotifyMuscleLevelUp(5);
+                NotifyGiftBoxCountUp();
             }
             else if (ShoulderExp >= 15000 && Lvs[5] < 90)    //75 to 90
             {
                 Lvs[5]++;
                 ShoulderExp = ShoulderExp - ShoulderMax;
                 ShoulderMax = 15000;
-                LevelUpScreen.Instance.ShowLevelUP(LevelUpScreen.Instance.fills[5].gameObject);
-                Shop.Instance.GiftBoxCntUP();
+                NotifyMuscleLevelUp(5);
+                NotifyGiftBoxCountUp();
             }
             else if (ShoulderExp >= 20000 && Lvs[5] == 99)
             {
                 Lvs[5] = 100;
                 ShoulderExp = 0;
                 ShoulderMax = 0;
-                LevelUpScreen.Instance.ShowLevelUP(LevelUpScreen.Instance.fills[5].gameObject);
-                Shop.Instance.GiftBoxCntUP();
+                NotifyMuscleLevelUp(5);
+                NotifyGiftBoxCountUp();
             }
             else if (ShoulderExp >= 17000 && Lvs[5] < 100)   //90 to 100
             {
                 Lvs[5]++;
                 ShoulderExp = ShoulderExp - ShoulderMax;
                 ShoulderMax = 17000;
-                LevelUpScreen.Instance.ShowLevelUP(LevelUpScreen.Instance.fills[5].gameObject);
-                Shop.Instance.GiftBoxCntUP();
+                NotifyMuscleLevelUp(5);
+                NotifyGiftBoxCountUp();
             }
-            GameObject text_ = Array.Find(LevelUpScreen.Instance.ScoreList, x => x.name == "Shoulder");
-            text_.transform.GetChild(0).GetComponent<TMP_Text>().text = Lvs[5].ToString();
+            NotifyScoreChanged("Shoulder", Lvs[5]);
         }
     }
     public float ShoulderLV
@@ -661,7 +663,7 @@ public class PlayerData //json for player information
                 ShoulderMax = 17000;
                 ShoulderExp = ShoulderMax + ShoulderExp;
             }
-            DataManager.Instance.LevelUp(RoutineQueueManager.Instance.Lv1[5], 0);
+            RequestMuscleRecalculate(5);
         }
     }
 
@@ -766,4 +768,3 @@ public class PlayerData //json for player information
     }
 
 }
-
